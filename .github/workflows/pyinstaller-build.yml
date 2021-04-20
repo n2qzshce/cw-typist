@@ -1,0 +1,104 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: Build executeable
+
+env:
+  semver: 1.0.0.${{ github.run_number }}
+  python-version: 3.8
+  KIVY_GL_BACKEND: 'angle_sdl2'
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches: [ master ]
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-2019, macos-10.15]
+        include:
+          - os: windows-2019
+            exe-extension: .exe
+            short-name: win
+            move-command: move
+            version-command: ${{ '|' }} out-file -encoding utf-8 ./src/cw_typist_version.py
+          - os: macos-10.15
+            exe-extension: .app
+            short-name: osx
+            move-command: mv
+            version-command: ${{ '>' }} ./src/cw_typist_version.py
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ env.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ env.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements.txt
+    - name: Write version file
+      run: |
+        echo "version = '${{ env.semver }}'" ${{ matrix.version-command }}
+    - name: Run Tests
+      run: |
+        python -m unittest discover -v
+    - name: Build GUI executable
+      run: |
+        pyinstaller cw_typist_gui_${{ matrix.short-name }}.spec
+        ${{ matrix.move-command }} dist/cw_typist_gui${{ matrix.exe-extension }} cw_typist-${{ matrix.short-name }}_gui-${{ env.semver }}${{ matrix.exe-extension }}
+        7z a -tzip cw_typist-${{ matrix.short-name }}-${{ env.semver }}.zip cw_typist-${{ matrix.short-name }}_gui-${{ env.semver }}${{ matrix.exe-extension }}
+    - name: Upload executable
+      id: upload_executable
+      uses: actions/upload-artifact@v2
+      with:
+        name: cw_typist-${{ matrix.short-name }}-${{ env.semver }}
+        path: cw_typist-${{ matrix.short-name }}-${{ env.semver }}.zip
+  release:
+    if: github.ref == 'refs/heads/master'
+    runs-on: ubuntu-20.04
+    outputs:
+      upload_url: ${{ steps.create_release.outputs.upload_url }}
+    steps:
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ env.semver }}
+          release_name: Release ${{ env.semver }}
+          body: |
+            release ${{ env.semver }} description
+
+            # Changelog:
+            *
+          draft: true
+          prerelease: false
+  release-assets:
+    runs-on: ubuntu-20.04
+    needs: [build, release]
+    strategy:
+      matrix:
+        short-name: [win, osx]
+    steps:
+    - name: Download artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: cw_typist-${{ matrix.short-name }}-${{ env.semver }}
+    - name: Upload Windows Release Asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ needs.release.outputs.upload_url }}
+        asset_path: ./cw_typist-${{ matrix.short-name }}-${{ env.semver }}.zip
+        asset_name: cw_typist-${{ matrix.short-name }}-${{ env.semver }}.zip
+        asset_content_type: application/zip
