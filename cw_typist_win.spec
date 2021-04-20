@@ -4,7 +4,7 @@ from kivy_deps import sdl2, glew
 block_cipher = None
 
 
-a = Analysis(['radio_sync_gui.py'],
+a = Analysis(['cw_typist.py'],
              binaries=[],
              datas=[('images', 'images')],
              hiddenimports=[],
@@ -24,7 +24,7 @@ exe = EXE(pyz,
           a.datas,
           *[Tree(p) for p in (sdl2.dep_bins + glew.dep_bins)],
           [],
-          name='radio_sync_gui',
+          name='cw_typist',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,

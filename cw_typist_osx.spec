@@ -3,7 +3,7 @@
 block_cipher = None
 
 
-a = Analysis(['radio_sync_gui.py'],
+a = Analysis(['cw_typist.py'],
              binaries=[],
              datas=[('images', 'images')],
              hiddenimports=[],
@@ -22,7 +22,7 @@ exe = EXE(pyz,
           a.zipfiles,
           a.datas,
           [],
-          name='radio_sync_gui.app',
+          name='cw_typist.app',
           debug=False,
           bootloader_ignore_signals=False,
           strip=False,
