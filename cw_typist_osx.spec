@@ -30,4 +30,4 @@ exe = EXE(pyz,
           upx_exclude=[],
           runtime_tmpdir=None,
           console=False,
-          icon='images/radio_sync.ico' )
+          icon='images/cw_typist.ico' )
