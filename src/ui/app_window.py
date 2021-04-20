@@ -75,7 +75,7 @@ class AppWindow(App):
 	force_debug = False
 
 	def build(self):
-		icon_path = './images/radio_sync.ico'
+		icon_path = './images/cw_typist.ico'
 		action_icon_path = './images/cw_typist.png'
 		if hasattr(sys, '_MEIPASS'):
 			logging.debug("Has _MEIPASS")
