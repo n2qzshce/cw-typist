@@ -3,6 +3,7 @@ import os
 import sys
 
 from kivy.app import App
+from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
@@ -27,6 +28,7 @@ class LayoutIds:
 	exit_button = 'exit_button'
 	lesson_description = 'lesson_description'
 	nothing_button = 'nothing_button'
+	toggle_mute = 'toggle_mute'
 
 
 kv = f"""
@@ -48,6 +50,12 @@ BoxLayout:
 				ActionButton:
 					id: {LayoutIds.exit_button}
 					text: "Exit"
+			ActionGroup:
+				text: "Sound"
+				mode: "spinner"
+				ActionToggleButton:
+					id: {LayoutIds.toggle_mute}
+					text: "Toggle mute"
 			ActionGroup:
 				text: "Help / Getting Started"
 				mode: "spinner"
@@ -99,6 +107,7 @@ class AppWindow(App):
 	_sound = None
 	_writing_tutor = None
 	_key_lock = False
+	_end_typing_event = None
 
 	def build(self):
 		LabelBase.register(name='SourceCodePro', fn_regular='fonts/SourceCodePro-Regular.ttf')
@@ -132,8 +141,24 @@ class AppWindow(App):
 		self.title = f'CW Typist v{cw_typist_version.version}'
 
 		self._bind_file_menu(layout)
+		self._bind_sound_menu(layout)
 		self._bind_help_menu(layout)
+		self._bind_main_view(layout)
 
+		return layout
+
+	def _bind_file_menu(self, layout):
+		exit_button = layout.ids[LayoutIds.exit_button]
+		exit_button.bind(on_press=self.stop)
+
+	def _bind_sound_menu(self, layout):
+		mute_button = layout.ids[LayoutIds.toggle_mute]
+		mute_button.bind(on_press=self.toggle_mute)
+
+	def _bind_help_menu(self, layout):
+		pass
+
+	def _bind_main_view(self, layout):
 		cw_button = layout.ids[LayoutIds.cw_button]
 		cw_button.bind(on_press=self.cw_down)
 		cw_button.bind(on_release=self.cw_up)
@@ -148,7 +173,12 @@ class AppWindow(App):
 			sound=sound,
 			lesson_description_box=lesson_description)
 
-		return layout
+	def toggle_mute(self, event):
+		mute = event.state == 'down'
+		if mute:
+			self._writing_tutor._sound.volume = 0
+		else:
+			self._writing_tutor._sound.volume = 1
 
 	def key_down_handler(self, window, key, code, text, modifiers):
 		if self._key_lock:
@@ -173,15 +203,18 @@ class AppWindow(App):
 			return True
 		return False
 
-	def _bind_file_menu(self, layout):
-		exit_button = layout.ids[LayoutIds.exit_button]
-		exit_button.bind(on_press=self.stop)
-
-	def _bind_help_menu(self, layout):
-		pass
-
 	def cw_down(self, event):
+		if self._end_typing_event is not None:
+			self._end_typing_event.cancel()
+			self._end_typing_event = None
 		self._writing_tutor.cw_down(cw_meta.tick_ms())
 
 	def cw_up(self, event):
+		if self._end_typing_event is not None:
+			self._end_typing_event.cancel()
+			self._end_typing_event = None
 		self._writing_tutor.cw_up(cw_meta.tick_ms())
+		self._end_typing_event = Clock.schedule_once(callback=self.finish_typing, timeout=1)
+
+	def finish_typing(self, event):
+		self._writing_tutor.cw_done(cw_meta.tick_ms())

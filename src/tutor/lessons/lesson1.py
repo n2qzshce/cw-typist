@@ -1,3 +1,5 @@
+import re
+
 from src.tutor.lessons.lesson import Lesson
 from src.util import cw_meta
 
@@ -10,5 +12,9 @@ class Lesson1(Lesson):
 
 		self.target_text = 'EEEE'
 
-	def key_event(self, cw_textbox):
-		cw_textbox.text = cw_textbox.text.replace(' ', '')
+	def key_event(self, cw_text):
+		cw_text = re.sub("[^E]", '', cw_text)
+		return cw_text
+
+	def is_complete(self, cw_text):
+		return cw_text == 'EEEE'

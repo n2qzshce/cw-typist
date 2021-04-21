@@ -1,6 +1,7 @@
 import logging
 
 from src.cw.SymbolTracker import SymbolTracker
+from src.tutor.lessons.lesson0 import Lesson0
 from src.tutor.lessons.lesson_registry import LessonRegistry
 from src.util import cw_meta
 
@@ -32,11 +33,28 @@ class WritingTutor:
 		self._sound.stop()
 		self.key_event()
 
+	def cw_done(self, tick):
+		symbol = self._cw.keyed_down(tick)
+		if symbol is not cw_meta.NONE:
+			# logging.debug(f"Symbol keyed: `{symbol}`")
+			self._cw_textbox.text += symbol
+		self.key_event()
+		raise Exception('This method still isn\'t quite right')
+
 	def load_lesson(self, num):
 		self._lesson = self._registry.lessons[num]
 		self._lesson_description_box.text = self._lesson.lesson_description
 		self._lesson_textbox.text = self._lesson.target_text
 
 	def key_event(self):
-		self._lesson.key_event(self._cw_textbox)
+		update_text = self._lesson.key_event(self._cw_textbox.text)
+		self._cw_textbox.text = update_text
+
+		if self._lesson.is_complete(self._cw_textbox.text):
+			self.complete_lesson()
+
 		pass
+
+	def complete_lesson(self):
+		self._lesson_textbox.text += "\nGood job!"
+		self._lesson = Lesson0()
