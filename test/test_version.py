@@ -6,13 +6,16 @@ import requests
 from semantic_version import Version
 
 from src import cw_typist_version
+from test.base_test_setup import BaseTestSetup
 
 
-class VersionTest(unittest.TestCase):
+class VersionTest(BaseTestSetup):
 	def test_version_present(self):
 		self.assertIsNotNone(cw_typist_version.version)
 
 	def test_version_ci(self):
+		if 'CI' not in os.environ.keys():
+			return
 		self.assertNotEqual(cw_typist_version.version, 'DEVELOPMENT')
 		logging.critical(f"Version found: {cw_typist_version.version}")
 

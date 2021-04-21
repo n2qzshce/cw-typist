@@ -2,40 +2,26 @@ import logging
 import os
 import sys
 
-from kivy import metrics
 from kivy.app import App
-from kivy.base import EventLoop
 from kivy.config import Config
+from kivy.core.audio import SoundLoader
 from kivy.core.window import Window
 from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.resources import resource_add_path
 from kivy.resources import resource_paths
-from kivy.uix.textinput import TextInput
 
 from src import cw_typist_version
+from src.cw.SymbolTracker import SymbolTracker
+from src.util import cw_meta
 
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 
-class RightClickTextInput(TextInput):
-	def on_touch_down(self, touch):
-
-		super().on_touch_down(touch)
-
-		if not self.focused:
-			return
-
-		if touch.button == 'right':
-			logging.debug("right mouse clicked")
-			pos = self.to_local(*self._long_touch_pos, relative=False)
-			pos = (pos[0], pos[1] - metrics.inch(.25))
-			self._show_cut_copy_paste(
-				pos, EventLoop.window, mode='paste')
-
-
 class LayoutIds:
 	action_previous = 'action_previous'
+	cw_output = 'cw_output'
+	cw_button = 'cw_button'
 	exit_button = 'exit_button'
 	nothing_button = 'nothing_button'
 
@@ -67,12 +53,31 @@ BoxLayout:
 					id: {LayoutIds.nothing_button}
 					text: "Warning: pointless button"
 	BoxLayout:
-		orientation: "vertical"
+		orientation: "horizontal"
+		BoxLayout:
+			orientation: "vertical"
+			TextInput:
+				id: {LayoutIds.cw_output}
+				font_name: 'RobotoMono-Regular'
+				text: ''
+				size_hint: (1, 1)
+				readonly: True
+				font_size: dp(11)
+		BoxLayout:
+			orientation: "vertical"
+			Button:
+				id : {LayoutIds.cw_button}
+				text: 'Doot'
+				font_size: dp(14)
+		BoxLayout:
 """
 
 
 class AppWindow(App):
 	force_debug = False
+	_sound = None
+	_cw = None
+	_cw_textbox = None
 
 	def build(self):
 		icon_path = './images/cw_typist.ico'
@@ -104,6 +109,16 @@ class AppWindow(App):
 
 		self._bind_file_menu(layout)
 		self._bind_help_menu(layout)
+
+		self._sound = SoundLoader.load('sounds/morse.wav')
+		cw_button = layout.ids[LayoutIds.cw_button]
+		cw_button.bind(on_press=self.cw_down)
+		cw_button.bind(on_release=self.cw_up)
+
+		self._cw_textbox = layout.ids[LayoutIds.cw_output]
+
+		self._cw = SymbolTracker()
+
 		return layout
 
 	def key_handler(self, window, keycode1, keycode2, text, modifiers):
@@ -117,3 +132,18 @@ class AppWindow(App):
 
 	def _bind_help_menu(self, layout):
 		pass
+
+	def cw_down(self, event):
+		symbol = self._cw.keyed_down(cw_meta.tick_ms())
+		if symbol is not None:
+			logging.debug(f"Symbol keyed: `{symbol}`")
+			self._cw_textbox.text += symbol
+		self._sound.play()
+
+	def cw_up(self, event):
+		symbol = self._cw.keyed_up(cw_meta.tick_ms())
+		if symbol is not cw_meta.NONE:
+			logging.debug(f"Symbol keyed: `{symbol}`")
+			self._cw_textbox.text += symbol
+		self._sound.stop()
+
