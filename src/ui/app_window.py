@@ -13,6 +13,7 @@ from kivy.resources import resource_paths
 
 from src import cw_typist_version
 from src.cw.SymbolTracker import SymbolTracker
+from src.util import cw_meta
 
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
@@ -121,8 +122,14 @@ class AppWindow(App):
 		pass
 
 	def cw_down(self, event):
+		symbol = self._cw.keyed_down(cw_meta.tick_ms())
+		if symbol is not cw_meta.NONE:
+			logging.debug(f"Symbol keyed: `{cw_meta.cw_printed[symbol]}`")
 		self._sound.play()
 
 	def cw_up(self, event):
+		symbol = self._cw.keyed_up(cw_meta.tick_ms())
+		if symbol is not cw_meta.NONE:
+			logging.debug(f"Symbol keyed: `{cw_meta.cw_printed[symbol]}`")
 		self._sound.stop()
 
