@@ -33,6 +33,7 @@ class VersionTest(BaseTestSetup):
 		is_master = ref == 'refs/heads/master'
 		if is_master:
 			logging.critical("Skipping version increment check on master.")
+			return
 		endpoint = "https://api.github.com/repos/n2qzshce/cw_typist/tags"
 		result = requests.get(endpoint, headers=headers)
 		result_json = result.json()
