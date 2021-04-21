@@ -135,15 +135,15 @@ class AppWindow(App):
 
 	def cw_down(self, event):
 		symbol = self._cw.keyed_down(cw_meta.tick_ms())
-		if symbol is not cw_meta.NONE:
-			logging.debug(f"Symbol keyed: `{cw_meta.cw_printed[symbol]}`")
-			self._cw_textbox.text += cw_meta.cw_printed[symbol]
+		if symbol is not None:
+			logging.debug(f"Symbol keyed: `{symbol}`")
+			self._cw_textbox.text += symbol
 		self._sound.play()
 
 	def cw_up(self, event):
 		symbol = self._cw.keyed_up(cw_meta.tick_ms())
 		if symbol is not cw_meta.NONE:
-			logging.debug(f"Symbol keyed: `{cw_meta.cw_printed[symbol]}`")
-			self._cw_textbox.text += cw_meta.cw_printed[symbol]
+			logging.debug(f"Symbol keyed: `{symbol}`")
+			self._cw_textbox.text += symbol
 		self._sound.stop()
 
