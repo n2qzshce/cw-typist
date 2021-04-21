@@ -72,6 +72,11 @@ no_chr_found = '█'
 def find_letter(sequence):
 	result = no_chr_found
 	listed_seq = list(sequence)
+	listed_seq.reverse()
+
+	for x in listed_seq:
+		if x == NEXT_LETTER or x == NEXT_WORD:
+			listed_seq.remove(x)
 
 	for character in cw_dict:
 		if cw_dict[character] == listed_seq:

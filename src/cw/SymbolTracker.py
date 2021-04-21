@@ -5,11 +5,11 @@ from src.util import cw_meta
 
 
 class SymbolTracker:
-	DOWN = 'DOWN'
-	UP = 'UP'
+	DOWN_TO_UP = 'DOWN_TO_UP'
+	UP_TO_DOWN = 'UP_TO_DOWN'
 
 	def __init__(self):
-		self._last_key_dir = self.UP
+		self._last_key_dir = self.UP_TO_DOWN
 		self._last_key_time = 0
 		self._symbol_rate = cw_meta.starting_rate
 		self._symbol_queue = collections.deque(25*[(cw_meta.DIT, cw_meta.starting_rate)], 25)
@@ -17,10 +17,10 @@ class SymbolTracker:
 		pass
 
 	def keyed_down(self, time_ms):
-		return self._key_event(self.UP, time_ms)
+		return self._key_event(self.UP_TO_DOWN, time_ms)
 
 	def keyed_up(self, time_ms):
-		return self._key_event(self.DOWN, time_ms)
+		return self._key_event(self.DOWN_TO_UP, time_ms)
 
 	def _key_event(self, direction, time_ms):
 		delta_time = time_ms - self._last_key_time
@@ -51,7 +51,7 @@ class SymbolTracker:
 		possible_dits = delta_time / dit_length
 
 		result = None
-		if direction == self.UP:
+		if direction == self.UP_TO_DOWN:
 			next_word_timing = (cw_meta.cw_timing[cw_meta.NEXT_LETTER] + cw_meta.cw_timing[cw_meta.NEXT_WORD]) / 2
 			if possible_dits < cw_meta.cw_timing[cw_meta.NEXT_LETTER]:
 				result = None
@@ -60,7 +60,7 @@ class SymbolTracker:
 			else:
 				result = cw_meta.NEXT_WORD
 
-		if direction == self.DOWN:
+		if direction == self.DOWN_TO_UP:
 			rounded = int(possible_dits)
 			if rounded <= cw_meta.cw_timing[cw_meta.DIT]:
 				result = cw_meta.DIT
