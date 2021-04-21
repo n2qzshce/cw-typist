@@ -20,6 +20,7 @@ Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 class LayoutIds:
 	action_previous = 'action_previous'
+	cw_output = 'cw_output'
 	cw_button = 'cw_button'
 	exit_button = 'exit_button'
 	nothing_button = 'nothing_button'
@@ -54,6 +55,14 @@ BoxLayout:
 	BoxLayout:
 		orientation: "horizontal"
 		BoxLayout:
+			orientation: "vertical"
+			TextInput:
+				id: {LayoutIds.cw_output}
+				font_name: 'RobotoMono-Regular'
+				text: ''
+				size_hint: (1, 1)
+				readonly: True
+				font_size: dp(11)
 		BoxLayout:
 			orientation: "vertical"
 			Button:
@@ -68,6 +77,7 @@ class AppWindow(App):
 	force_debug = False
 	_sound = None
 	_cw = None
+	_cw_textbox = None
 
 	def build(self):
 		icon_path = './images/cw_typist.ico'
@@ -105,6 +115,8 @@ class AppWindow(App):
 		cw_button.bind(on_press=self.cw_down)
 		cw_button.bind(on_release=self.cw_up)
 
+		self._cw_textbox = layout.ids[LayoutIds.cw_output]
+
 		self._cw = SymbolTracker()
 
 		return layout
@@ -125,11 +137,13 @@ class AppWindow(App):
 		symbol = self._cw.keyed_down(cw_meta.tick_ms())
 		if symbol is not cw_meta.NONE:
 			logging.debug(f"Symbol keyed: `{cw_meta.cw_printed[symbol]}`")
+			self._cw_textbox.text += cw_meta.cw_printed[symbol]
 		self._sound.play()
 
 	def cw_up(self, event):
 		symbol = self._cw.keyed_up(cw_meta.tick_ms())
 		if symbol is not cw_meta.NONE:
 			logging.debug(f"Symbol keyed: `{cw_meta.cw_printed[symbol]}`")
+			self._cw_textbox.text += cw_meta.cw_printed[symbol]
 		self._sound.stop()
 

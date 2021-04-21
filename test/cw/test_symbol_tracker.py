@@ -29,3 +29,9 @@ class TestSymbolTracker(BaseTestSetup):
 	def test_next_word(self):
 		symbol = self.symbol_tracker.calculate_symbol(SymbolTracker.UP, 1200 * 7, 1)
 		self.assertEqual(cw_meta.NEXT_WORD, symbol)
+
+	def test_long_wait(self):
+		first_wait = self.symbol_tracker.is_long_wait(1200 * 7)
+		second_wait = self.symbol_tracker.is_long_wait(60000)
+		self.assertFalse(first_wait)
+		self.assertTrue(second_wait)

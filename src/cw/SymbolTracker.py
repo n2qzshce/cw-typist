@@ -21,15 +21,17 @@ class SymbolTracker:
 		return self._key_event(self.DOWN, time_ms)
 
 	def _key_event(self, direction, time_ms):
-		if direction == self._last_key_dir:
-			return None
-
 		delta_time = time_ms - self._last_key_time
 		self._last_key_time = time_ms
 		self._last_key_dir = direction
+
 		symbol = self.calculate_symbol(direction, delta_time, self.wpm())
 
-		self._symbol_queue.appendleft((symbol, delta_time))
+		if self.is_long_wait(delta_time):
+			symbol = cw_meta.NONE
+
+		if symbol != cw_meta.NONE:
+			self._symbol_queue.appendleft((symbol, delta_time))
 		return symbol
 
 	def calculate_symbol(self, direction, delta_time, wpm):
@@ -65,3 +67,14 @@ class SymbolTracker:
 		average = dit_sum / len(self._symbol_queue)
 		wpm = cw_meta.wpm(average)
 		return wpm
+
+	def is_long_wait(self, delta_time):
+		space_time = cw_meta.starting_rate * cw_meta.cw_timing[cw_meta.NEXT_WORD]
+
+		result = False
+		long_interval = space_time * 10
+		if delta_time > long_interval:
+			result = True
+
+		return result
+
