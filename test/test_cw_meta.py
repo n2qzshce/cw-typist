@@ -14,16 +14,20 @@ class TestCwMeta(BaseTestSetup):
 		self.assertEqual(1200, dit)
 
 	def test_letter_e(self):
-		seq = collections.deque([cw_meta.DIT], 6)
+		seq = collections.deque([cw_meta.DIT], 7)
 		letter = cw_meta.find_letter(seq)
 		self.assertEqual('E', letter)
 
 	def test_letter_t(self):
-		seq = collections.deque([cw_meta.DAH], 6)
+		seq = collections.deque([cw_meta.DAH], 7)
 		letter = cw_meta.find_letter(seq)
 		self.assertEqual('T', letter)
 
 	def test_no_chr_found(self):
-		seq = collections.deque(6*[cw_meta.DIT], 6)
+		seq = collections.deque(6*[cw_meta.DIT], 7)
 		letter = cw_meta.find_letter(seq)
 		self.assertEqual(cw_meta.no_chr_found, letter)
+
+	def test_character_formatting(self):
+		result = cw_meta.formatted('?')
+		self.assertEqual('••——••', result)

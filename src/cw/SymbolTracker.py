@@ -13,7 +13,7 @@ class SymbolTracker:
 		self._last_key_time = 0
 		self._symbol_rate = cw_meta.starting_rate
 		self._symbol_queue = collections.deque(25*[(cw_meta.DIT, cw_meta.starting_rate)], 25)
-		self._letter_built = collections.deque([], 6)
+		self._letter_built = collections.deque([], 7)
 		pass
 
 	def keyed_down(self, time_ms):
@@ -39,7 +39,7 @@ class SymbolTracker:
 		letter = None
 		if symbol == cw_meta.NEXT_WORD or symbol == cw_meta.NEXT_LETTER:
 			letter = cw_meta.find_letter(self._letter_built)
-			self._letter_built = collections.deque([], 6)
+			self._letter_built = collections.deque([], 7)
 
 			if symbol == cw_meta.NEXT_WORD:
 				letter += ' '
@@ -90,4 +90,3 @@ class SymbolTracker:
 			result = True
 
 		return result
-
