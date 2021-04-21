@@ -1,4 +1,5 @@
 import collections
+import logging
 
 from src.util import cw_meta
 
@@ -12,6 +13,7 @@ class SymbolTracker:
 		self._last_key_time = 0
 		self._symbol_rate = cw_meta.starting_rate
 		self._symbol_queue = collections.deque(25*[(cw_meta.DIT, cw_meta.starting_rate)], 25)
+		self._letter_built = collections.deque([], 6)
 		pass
 
 	def keyed_down(self, time_ms):
@@ -32,7 +34,17 @@ class SymbolTracker:
 
 		if symbol != cw_meta.NONE:
 			self._symbol_queue.appendleft((symbol, delta_time))
-		return symbol
+			self._letter_built.appendleft(symbol)
+
+		letter = None
+		if symbol == cw_meta.NEXT_WORD or symbol == cw_meta.NEXT_LETTER:
+			letter = cw_meta.find_letter(self._letter_built)
+			self._letter_built = collections.deque([], 6)
+
+			if symbol == cw_meta.NEXT_WORD:
+				letter += ' '
+
+		return letter
 
 	def calculate_symbol(self, direction, delta_time, wpm):
 		dit_length = cw_meta.dit_ms(wpm)
@@ -55,6 +67,7 @@ class SymbolTracker:
 			else:
 				result = cw_meta.DAH
 
+		logging.debug(f"CW Symbol: `{result}`")
 		return result
 
 	def wpm(self):
