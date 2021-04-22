@@ -6,7 +6,7 @@ block_cipher = None
 
 a = Analysis(['cw_typist.py'],
              binaries=[],
-             datas=[('images', 'images')],
+             datas=[('images', 'images'), ('fonts', 'fonts'), ('sounds', 'sounds')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],

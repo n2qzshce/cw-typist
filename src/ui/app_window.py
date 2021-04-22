@@ -21,13 +21,17 @@ Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 class LayoutIds:
 	action_previous = 'action_previous'
+	clear_text = 'clear_text'
 	cw_lesson = 'cw_lesson'
 	cw_output = 'cw_output'
 	cw_button = 'cw_button'
 	exit_button = 'exit_button'
 	lesson_description = 'lesson_description'
+	lesson_next = 'lesson_next'
+	lesson_prev = 'lesson_prev'
 	nothing_button = 'nothing_button'
 	toggle_mute = 'toggle_mute'
+	wpm_display = 'wpm_display'
 
 
 kv = f"""
@@ -55,7 +59,7 @@ BoxLayout:
 				ActionToggleButton:
 					id: {LayoutIds.toggle_mute}
 					text: "Toggle mute"
-					state: 'down'
+					#state: 'down'
 			ActionGroup:
 				text: "Help / Getting Started"
 				mode: "spinner"
@@ -71,13 +75,14 @@ BoxLayout:
 			Label:
 				text: 'Lesson'
 				size_hint_y: 0.075
-			TextInput:
+			Label:
 				id: {LayoutIds.cw_lesson}
 				font_name: 'SourceCodePro'
 				text: ''
 				size_hint: (1, 0.5)
 				readonly: True
 				font_size: dp(11)
+				markup: True
 			Label:
 				text: 'Your Input'
 				size_hint_y: 0.075
@@ -90,15 +95,45 @@ BoxLayout:
 				font_size: dp(11)
 		BoxLayout:
 			padding: dp(40)
+			orientation: "vertical"
+			BoxLayout:
+				padding: dp(10)
+				size_hint: (1.0, 0.2)
+				orientation: "horizontal"
+				Button:
+					id: {LayoutIds.clear_text}
+					text: 'Clear output'
+					font_size: dp(14)
 			Button:
 				id : {LayoutIds.cw_button}
-				text: 'Doot'
+				text: 'CW Key'
 				font_size: dp(14)
-		BoxLayout:
 			Label:
+				size_hint: (1, 0.1)
+				id: {LayoutIds.wpm_display}
 				text_size: self.width, None
+				text: 'WPM: NaN'
+		BoxLayout:
+			orientation: "vertical"
+			BoxLayout:
+				size_hint: (1, 0.2)
+				padding: dp(10)
+				Button:
+					id: {LayoutIds.lesson_prev}
+					text: 'Previous lesson'
+					font_size: dp(14)
+				Button:
+					id: {LayoutIds.lesson_next}
+					text: 'Next lesson'
+					font_size: dp(14)
+			Label:
 				id: {LayoutIds.lesson_description}
+				text_size: self.width, None
+				size_hint: (1, 0.3)
 				text: ''
+				markup: True
+			Label:
+				size_hint: (1, 0.4)
 """
 
 
@@ -107,7 +142,7 @@ class AppWindow(App):
 	_sound = None
 	_writing_tutor = None
 	_key_lock = False
-	_sound = None
+	_wpm_box = None
 
 	def build(self):
 		LabelBase.register(name='SourceCodePro', fn_regular='fonts/SourceCodePro-Regular.ttf')
@@ -164,8 +199,8 @@ class AppWindow(App):
 		cw_button.bind(on_release=self.cw_up)
 
 		self._sound = SoundLoader.load('sounds/morse.wav')
-		self._sound.volume = 0
-		self._sound.play()
+		# self._sound.volume = 0
+		# self._sound.play()
 		cw_textbox = layout.ids[LayoutIds.cw_output]
 		lesson_textbox = layout.ids[LayoutIds.cw_lesson]
 		lesson_description = layout.ids[LayoutIds.lesson_description]
@@ -173,6 +208,26 @@ class AppWindow(App):
 			cw_textbox=cw_textbox,
 			lesson_textbox=lesson_textbox,
 			lesson_description_box=lesson_description)
+
+		lesson_next = layout.ids[LayoutIds.lesson_next]
+		lesson_next.bind(on_press=self.lesson_next)
+		lesson_prev = layout.ids[LayoutIds.lesson_prev]
+		lesson_prev.bind(on_press=self.lesson_prev)
+
+		clear_button = layout.ids[LayoutIds.clear_text]
+		clear_button.bind(on_press=self.clear_text)
+
+		self._wpm_box = layout.ids[LayoutIds.wpm_display]
+
+	def lesson_next(self, event):
+		self._writing_tutor.lesson_next()
+
+	def lesson_prev(self, event):
+		self._writing_tutor.lesson_prev()
+
+	def clear_text(self, event):
+		self._writing_tutor.cw_textbox.text = ''
+		self._writing_tutor.reset_lesson()
 
 	def toggle_mute(self, event):
 		mute = event.state == 'down'
@@ -214,3 +269,4 @@ class AppWindow(App):
 		self._sound.stop()
 		self._writing_tutor.cw_up(cw_meta.tick_ms())
 		self._writing_tutor.cw_textbox.focus = True
+		self._wpm_box.text = f"WPM: {self._writing_tutor.cw.wpm():.0f}"
