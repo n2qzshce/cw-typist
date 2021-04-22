@@ -31,6 +31,7 @@ class LayoutIds:
 	lesson_prev = 'lesson_prev'
 	nothing_button = 'nothing_button'
 	toggle_mute = 'toggle_mute'
+	wpm_display = 'wpm_display'
 
 
 kv = f"""
@@ -107,10 +108,15 @@ BoxLayout:
 				id : {LayoutIds.cw_button}
 				text: 'CW Key'
 				font_size: dp(14)
+			Label:
+				size_hint: (1, 0.1)
+				id: {LayoutIds.wpm_display}
+				text_size: self.width, None
+				text: 'WPM: NaN'
 		BoxLayout:
 			orientation: "vertical"
 			BoxLayout:
-				size_hint: (1, 0.2)
+				size_hint: (1, 0.3)
 				padding: dp(10)
 				Button:
 					id: {LayoutIds.lesson_prev}
@@ -121,9 +127,10 @@ BoxLayout:
 					text: 'Next lesson'
 					font_size: dp(14)
 			Label:
-				text_size: self.width, None
 				id: {LayoutIds.lesson_description}
+				text_size: self.width, None
 				text: ''
+				markup: True
 """
 
 
@@ -132,7 +139,7 @@ class AppWindow(App):
 	_sound = None
 	_writing_tutor = None
 	_key_lock = False
-	_sound = None
+	_wpm_box = None
 
 	def build(self):
 		LabelBase.register(name='SourceCodePro', fn_regular='fonts/SourceCodePro-Regular.ttf')
@@ -207,6 +214,8 @@ class AppWindow(App):
 		clear_button = layout.ids[LayoutIds.clear_text]
 		clear_button.bind(on_press=self.clear_text)
 
+		self._wpm_box = layout.ids[LayoutIds.wpm_display]
+
 	def lesson_next(self, event):
 		self._writing_tutor.lesson_next()
 
@@ -257,3 +266,4 @@ class AppWindow(App):
 		self._sound.stop()
 		self._writing_tutor.cw_up(cw_meta.tick_ms())
 		self._writing_tutor.cw_textbox.focus = True
+		self._wpm_box.text = f"WPM: {self._writing_tutor.cw.wpm():.0f}"
