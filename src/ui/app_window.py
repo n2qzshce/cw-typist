@@ -55,6 +55,7 @@ BoxLayout:
 				ActionToggleButton:
 					id: {LayoutIds.toggle_mute}
 					text: "Toggle mute"
+					state: 'down'
 			ActionGroup:
 				text: "Help / Getting Started"
 				mode: "spinner"
@@ -106,6 +107,7 @@ class AppWindow(App):
 	_sound = None
 	_writing_tutor = None
 	_key_lock = False
+	_sound = None
 
 	def build(self):
 		LabelBase.register(name='SourceCodePro', fn_regular='fonts/SourceCodePro-Regular.ttf')
@@ -161,22 +163,24 @@ class AppWindow(App):
 		cw_button.bind(on_press=self.cw_down)
 		cw_button.bind(on_release=self.cw_up)
 
-		sound = SoundLoader.load('sounds/morse.wav')
+		self._sound = SoundLoader.load('sounds/morse.wav')
+		self._sound.volume = 0
+		self._sound.play()
 		cw_textbox = layout.ids[LayoutIds.cw_output]
 		lesson_textbox = layout.ids[LayoutIds.cw_lesson]
 		lesson_description = layout.ids[LayoutIds.lesson_description]
 		self._writing_tutor = WritingTutor(
 			cw_textbox=cw_textbox,
 			lesson_textbox=lesson_textbox,
-			sound=sound,
 			lesson_description_box=lesson_description)
 
 	def toggle_mute(self, event):
 		mute = event.state == 'down'
 		if mute:
-			self._writing_tutor._sound.volume = 0
+			self._sound.volume = 0
 		else:
-			self._writing_tutor._sound.volume = 1
+			self._sound.volume = 1
+			self._sound.stop()
 
 	def key_down_handler(self, window, key, code, text, modifiers):
 		if self._key_lock:
@@ -202,9 +206,11 @@ class AppWindow(App):
 		return False
 
 	def cw_down(self, event):
+		self._sound.play()
 		self._writing_tutor.cw_down(cw_meta.tick_ms())
 		self._writing_tutor.cw_textbox.focus = True
 
 	def cw_up(self, event):
+		self._sound.stop()
 		self._writing_tutor.cw_up(cw_meta.tick_ms())
 		self._writing_tutor.cw_textbox.focus = True

@@ -1,3 +1,5 @@
+from kivy.clock import Clock
+
 from src.cw.SymbolTracker import SymbolTracker
 from src.tutor.lessons.lesson0 import Lesson0
 from src.tutor.lessons.lesson_registry import LessonRegistry
@@ -5,39 +7,41 @@ from src.util import cw_meta
 
 
 class WritingTutor:
-	def __init__(self, cw_textbox, lesson_textbox, sound, lesson_description_box):
+	def __init__(self, cw_textbox, lesson_textbox, lesson_description_box):
 		self._registry = LessonRegistry()
 		self._cw = SymbolTracker()
 		self.cw_textbox = cw_textbox
-		self._sound = sound
 		self._lesson_textbox = lesson_textbox
 		self._lesson_description_box = lesson_description_box
 		self._lesson = None
-		self.load_lesson(0)
+		self._next_letter_event = Clock.schedule_once(self._next_letter, self._cw.next_letter_timing())
+		self._next_letter_event.cancel()
+		self._next_word_event = Clock.schedule_once(self._next_word, self._cw.next_word_timing())
+		self._next_word_event.cancel()
+
+		self.load_lesson(1)
 
 	def cw_down(self, tick):
-		symbol = self._cw.keyed_down(tick)
-		if symbol is not None:
-			# logging.debug(f"Symbol keyed: `{symbol}`")
-			self.cw_textbox.text += symbol
-		self._sound.play()
+		self._cw.keyed_down(tick)
 		self.key_event()
+		self._next_letter_event.cancel()
+		self._next_word_event.cancel()
 
 	def cw_up(self, tick):
-		symbol = self._cw.keyed_up(tick)
-		if symbol is not cw_meta.NONE:
-			# logging.debug(f"Symbol keyed: `{symbol}`")
-			self.cw_textbox.text += symbol
-		self._sound.stop()
+		self._cw.keyed_up(tick)
+		self.key_event()
+		self._next_letter_event()
+		self._next_word_event()
+
+	def _next_letter(self, event):
+		self.cw_textbox.text += self._cw.next_letter()
+		Clock.unschedule(self._next_letter_event)
 		self.key_event()
 
-	def cw_done(self, tick):
-		symbol = self._cw.keyed_down(tick)
-		if symbol is not cw_meta.NONE:
-			# logging.debug(f"Symbol keyed: `{symbol}`")
-			self.cw_textbox.text += symbol
+	def _next_word(self, event):
+		self.cw_textbox.text += cw_meta.cw_printed[cw_meta.NEXT_WORD]
+		Clock.unschedule(self._next_word_event)
 		self.key_event()
-		raise Exception('This method still isn\'t quite right')
 
 	def load_lesson(self, num):
 		self._lesson = self._registry.lessons[num]()
@@ -50,7 +54,6 @@ class WritingTutor:
 
 		if self._lesson.is_complete(self.cw_textbox.text):
 			self.complete_lesson()
-
 		pass
 
 	def complete_lesson(self):
