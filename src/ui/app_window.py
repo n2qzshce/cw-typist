@@ -203,11 +203,17 @@ class AppWindow(App):
 		lesson_prev = layout.ids[LayoutIds.lesson_prev]
 		lesson_prev.bind(on_press=self.lesson_prev)
 
+		clear_button = layout.ids[LayoutIds.clear_text]
+		clear_button.bind(on_press=self.clear_text)
+
 	def lesson_next(self, event):
 		self._writing_tutor.lesson_next()
 
 	def lesson_prev(self, event):
 		self._writing_tutor.lesson_prev()
+
+	def clear_text(self, event):
+		self._writing_tutor.cw_textbox.text = ''
 
 	def toggle_mute(self, event):
 		mute = event.state == 'down'
