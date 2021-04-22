@@ -9,8 +9,8 @@ class Lesson3(Lesson):
 		super().__init__()
 		self.number = 3
 		self.lesson_title = f"T: {cw_meta.formatted('T')}"
-		self.lesson_description = f"Do not worry about spacing, just focus on getting " \
-			"an even pace. Remember to leave a small interval between each pulse to indicate the end of a letter."
+		self.lesson_description = f"Where 'E' is represented with a short pulse ('dot'), 'T' is represented with a long " \
+			f"pulse ('dash'). This pulse is generally 3x longer than your short pulse."
 
 		self.target_text = 'TTTT'
 

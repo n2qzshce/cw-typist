@@ -59,7 +59,7 @@ BoxLayout:
 				ActionToggleButton:
 					id: {LayoutIds.toggle_mute}
 					text: "Toggle mute"
-					state: 'down'
+					#state: 'down'
 			ActionGroup:
 				text: "Help / Getting Started"
 				mode: "spinner"
@@ -116,7 +116,7 @@ BoxLayout:
 		BoxLayout:
 			orientation: "vertical"
 			BoxLayout:
-				size_hint: (1, 0.3)
+				size_hint: (1, 0.2)
 				padding: dp(10)
 				Button:
 					id: {LayoutIds.lesson_prev}
@@ -129,8 +129,11 @@ BoxLayout:
 			Label:
 				id: {LayoutIds.lesson_description}
 				text_size: self.width, None
+				size_hint: (1, 0.3)
 				text: ''
 				markup: True
+			Label:
+				size_hint: (1, 0.4)
 """
 
 
@@ -196,8 +199,8 @@ class AppWindow(App):
 		cw_button.bind(on_release=self.cw_up)
 
 		self._sound = SoundLoader.load('sounds/morse.wav')
-		self._sound.volume = 0
-		self._sound.play()
+		# self._sound.volume = 0
+		# self._sound.play()
 		cw_textbox = layout.ids[LayoutIds.cw_output]
 		lesson_textbox = layout.ids[LayoutIds.cw_lesson]
 		lesson_description = layout.ids[LayoutIds.lesson_description]

@@ -22,7 +22,7 @@ class WritingTutor:
 		self._next_word_event.cancel()
 		self._lesson_already_completed = False
 
-		self.load_lesson(1)
+		self.load_lesson(0)
 
 	def cw_down(self, tick):
 		self.cw.keyed_down(tick)
