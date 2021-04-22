@@ -10,5 +10,4 @@ class Lesson:
 		raise Exception("Base method cannot be called!")
 
 	def is_complete(self, cw_text):
-		# return true/false if the lesson is completed or not
-		raise Exception("Base method cannot be called!")
+		return self.target_text == cw_text

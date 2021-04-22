@@ -17,6 +17,3 @@ class Lesson3(Lesson):
 	def key_event(self, cw_text):
 		cw_text = re.sub("[^T]", '', cw_text)
 		return cw_text
-
-	def is_complete(self, cw_text):
-		return cw_text == self.target_text

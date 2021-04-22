@@ -113,6 +113,9 @@ class WritingTutor:
 		self.cw_textbox.text += "\n"
 
 	def display_accuracy(self):
+		if self._lesson_already_completed:
+			return
+		self._lesson_already_completed = True
 		diff = difflib.SequenceMatcher(a=self._lesson.target_text, b=self.cw_textbox.text)
 		match_pct = diff.ratio() * 100
 		self._lesson_textbox.text += f"\nLesson complete.\nAccuracy: {match_pct:2.0f}%"
