@@ -203,6 +203,8 @@ class AppWindow(App):
 
 	def cw_down(self, event):
 		self._writing_tutor.cw_down(cw_meta.tick_ms())
+		self._writing_tutor.cw_textbox.focus = True
 
 	def cw_up(self, event):
 		self._writing_tutor.cw_up(cw_meta.tick_ms())
+		self._writing_tutor.cw_textbox.focus = True

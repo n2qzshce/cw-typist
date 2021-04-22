@@ -8,7 +8,7 @@ class WritingTutor:
 	def __init__(self, cw_textbox, lesson_textbox, sound, lesson_description_box):
 		self._registry = LessonRegistry()
 		self._cw = SymbolTracker()
-		self._cw_textbox = cw_textbox
+		self.cw_textbox = cw_textbox
 		self._sound = sound
 		self._lesson_textbox = lesson_textbox
 		self._lesson_description_box = lesson_description_box
@@ -19,7 +19,7 @@ class WritingTutor:
 		symbol = self._cw.keyed_down(tick)
 		if symbol is not None:
 			# logging.debug(f"Symbol keyed: `{symbol}`")
-			self._cw_textbox.text += symbol
+			self.cw_textbox.text += symbol
 		self._sound.play()
 		self.key_event()
 
@@ -27,7 +27,7 @@ class WritingTutor:
 		symbol = self._cw.keyed_up(tick)
 		if symbol is not cw_meta.NONE:
 			# logging.debug(f"Symbol keyed: `{symbol}`")
-			self._cw_textbox.text += symbol
+			self.cw_textbox.text += symbol
 		self._sound.stop()
 		self.key_event()
 
@@ -35,7 +35,7 @@ class WritingTutor:
 		symbol = self._cw.keyed_down(tick)
 		if symbol is not cw_meta.NONE:
 			# logging.debug(f"Symbol keyed: `{symbol}`")
-			self._cw_textbox.text += symbol
+			self.cw_textbox.text += symbol
 		self.key_event()
 		raise Exception('This method still isn\'t quite right')
 
@@ -45,10 +45,10 @@ class WritingTutor:
 		self._lesson_textbox.text = self._lesson.target_text
 
 	def key_event(self):
-		update_text = self._lesson.key_event(self._cw_textbox.text)
-		self._cw_textbox.text = update_text
+		update_text = self._lesson.key_event(self.cw_textbox.text)
+		self.cw_textbox.text = update_text
 
-		if self._lesson.is_complete(self._cw_textbox.text):
+		if self._lesson.is_complete(self.cw_textbox.text):
 			self.complete_lesson()
 
 		pass
