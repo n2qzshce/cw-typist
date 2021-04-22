@@ -10,7 +10,7 @@ class Lesson4(Lesson):
 		self.number = 4
 		self.lesson_title = f"E and T"
 		self.lesson_description = f"A 'dash' is generally around 3x as long as a 'dot.' Maintain a steady pace. A \"█\"" \
-			f" represents a missed character."
+			f" will represent an invalid character."
 
 		self.target_text = 'T T TT E E EE ET TE ET TE ETET TETE ETET TETE'
 

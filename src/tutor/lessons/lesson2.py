@@ -8,12 +8,14 @@ class Lesson2(Lesson):
 	def __init__(self):
 		super().__init__()
 		self.number = 2
-		self.lesson_title = "Spacing:"
-		self.lesson_description = f"To send a space, leave a pause in between your letters.\n" \
-			f"Don't worry about missed symbols, just focus on the next symbol."
+		self.lesson_title = f"T: {cw_meta.formatted('T')}"
+		self.lesson_description = f"Where 'E' is represented with a short pulse ('dot'), 'T' is represented with a long " \
+			f"pulse ('dash'). This pulse is generally 3x longer than your short pulse."
 
-		self.target_text = 'EE E EEE E EE EEE'
+		self.target_text = 'TTTTEEEETTEE'
 
 	def key_event(self, cw_text):
-		cw_text = re.sub("[^(E )]", '', cw_text)
+		cw_text = re.sub("[^TE]", '', cw_text)
 		return cw_text
+
+

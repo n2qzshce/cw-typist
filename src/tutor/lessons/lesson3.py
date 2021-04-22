@@ -1,19 +1,19 @@
 import re
 
 from src.tutor.lessons.lesson import Lesson
-from src.util import cw_meta
 
 
 class Lesson3(Lesson):
 	def __init__(self):
 		super().__init__()
 		self.number = 3
-		self.lesson_title = f"T: {cw_meta.formatted('T')}"
-		self.lesson_description = f"Where 'E' is represented with a short pulse ('dot'), 'T' is represented with a long " \
-			f"pulse ('dash'). This pulse is generally 3x longer than your short pulse."
+		self.lesson_title = "Spacing:"
+		self.lesson_description = f"Where a short pause represents a new character, a longer pause represents a space." \
+			f" The pause in between characters is usually as long as a 'dot,' and the pause in between words is as long" \
+			f" or longer than a dash."
 
-		self.target_text = 'TTTT'
+		self.target_text = 'EE E EEE E EE EEE'
 
 	def key_event(self, cw_text):
-		cw_text = re.sub("[^T]", '', cw_text)
+		cw_text = re.sub("[^(E )]", '', cw_text)
 		return cw_text
