@@ -18,8 +18,8 @@ cw_timing = {
 
 cw_printed = {
 	NONE: None,
-	DIT: '.',
-	DAH: '_',
+	DIT: '•',
+	DAH: '—',
 	NEXT_LETTER: '^',
 	NEXT_WORD: ' ',
 }
@@ -97,4 +97,12 @@ def tick_ms():
 	nanos = time.monotonic_ns()
 	millis = nanos / 1000000
 	return millis
+
+
+def formatted(letter):
+	pattern = cw_dict[letter]
+	result = ''
+	for x in pattern:
+		result += cw_printed[x]
+	return result
 

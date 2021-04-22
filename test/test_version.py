@@ -29,6 +29,9 @@ class VersionTest(BaseTestSetup):
 		else:
 			logging.critical('GITHUB_TOKEN not set')
 
+		if 'CI' not in os.environ.keys():
+			return
+
 		logging.critical(f"Current ref is `{ref}`")
 		is_master = ref == 'refs/heads/master'
 		if is_master:

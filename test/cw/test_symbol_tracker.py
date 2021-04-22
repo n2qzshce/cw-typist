@@ -1,3 +1,5 @@
+import collections
+
 from src.cw.SymbolTracker import SymbolTracker
 from src.util import cw_meta
 from test.base_test_setup import BaseTestSetup
@@ -15,20 +17,12 @@ class TestSymbolTracker(BaseTestSetup):
 		self.assertEqual(self.symbol_tracker.wpm(), 5)
 
 	def test_dit(self):
-		symbol = self.symbol_tracker.calculate_symbol(SymbolTracker.DOWN_TO_UP, 1200, 1)
+		symbol = self.symbol_tracker.calculate_symbol(1200, 1)
 		self.assertEqual(cw_meta.DIT, symbol)
 
 	def test_dah(self):
-		symbol = self.symbol_tracker.calculate_symbol(SymbolTracker.DOWN_TO_UP, 1200 * 7, 1)
+		symbol = self.symbol_tracker.calculate_symbol(1200 * 7, 1)
 		self.assertEqual(cw_meta.DAH, symbol)
-
-	def test_next_char(self):
-		symbol = self.symbol_tracker.calculate_symbol(SymbolTracker.UP_TO_DOWN, 1200 * 3, 1)
-		self.assertEqual(cw_meta.NEXT_LETTER, symbol)
-
-	def test_next_word(self):
-		symbol = self.symbol_tracker.calculate_symbol(SymbolTracker.UP_TO_DOWN, 1200 * 7, 1)
-		self.assertEqual(cw_meta.NEXT_WORD, symbol)
 
 	def test_long_wait(self):
 		first_wait = self.symbol_tracker.is_long_wait(1200 * 7)
@@ -37,15 +31,29 @@ class TestSymbolTracker(BaseTestSetup):
 		self.assertTrue(second_wait)
 
 	def test_gets_e(self):
-		self.symbol_tracker._last_key_dir = SymbolTracker.UP_TO_DOWN
-		symbol = self.symbol_tracker.keyed_up(240)
-		symbol = self.symbol_tracker.keyed_down(self.symbol_tracker._last_key_time + 240 * 3)
+		self.symbol_tracker.keyed_up(240)
+		self.symbol_tracker.keyed_down(self.symbol_tracker._last_key_time + 240 * 3)
+		symbol = self.symbol_tracker.next_letter()
 		self.assertEqual('E', symbol)
 
 	def test_gets_n(self):
-		self.symbol_tracker._last_key_dir = SymbolTracker.UP_TO_DOWN
-		symbol = self.symbol_tracker.keyed_up(240 * 3)
-		symbol = self.symbol_tracker.keyed_down(self.symbol_tracker._last_key_time + 1)
-		symbol = self.symbol_tracker.keyed_up(self.symbol_tracker._last_key_time + 240)
-		symbol = self.symbol_tracker.keyed_down(self.symbol_tracker._last_key_time + 240 * 3)
+		self.symbol_tracker.keyed_up(240 * 3)
+		self.symbol_tracker.keyed_down(self.symbol_tracker._last_key_time + 1)
+		self.symbol_tracker.keyed_up(self.symbol_tracker._last_key_time + 240)
+		self.symbol_tracker.keyed_down(self.symbol_tracker._last_key_time + 240 * 3)
+		symbol = self.symbol_tracker.next_letter()
 		self.assertEqual('N', symbol)
+
+	def test_next_letter_timing(self):
+		timing = self.symbol_tracker.next_letter_timing()
+		self.assertEqual(240 * 3 / 1000, timing)
+
+	def test_next_word_timing(self):
+		timing = self.symbol_tracker.next_word_timing()
+		self.assertEqual(240 * 7 / 1000, timing)
+
+	def test_next_letter_clears_buffer(self):
+		self.symbol_tracker._letter_built = collections.deque([cw_meta.DIT]*7, 7)
+		symbol = self.symbol_tracker.next_letter()
+		after = list(self.symbol_tracker._letter_built)
+		self.assertEqual([], after)

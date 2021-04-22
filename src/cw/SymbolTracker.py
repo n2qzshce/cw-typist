@@ -9,25 +9,20 @@ class SymbolTracker:
 	UP_TO_DOWN = 'UP_TO_DOWN'
 
 	def __init__(self):
-		self._last_key_dir = self.UP_TO_DOWN
 		self._last_key_time = 0
 		self._symbol_rate = cw_meta.starting_rate
 		self._symbol_queue = collections.deque(25*[(cw_meta.DIT, cw_meta.starting_rate)], 25)
-		self._letter_built = collections.deque([], 6)
+		self._letter_built = collections.deque([], 7)
 		pass
 
 	def keyed_down(self, time_ms):
-		return self._key_event(self.UP_TO_DOWN, time_ms)
+		self._last_key_time = time_ms
 
 	def keyed_up(self, time_ms):
-		return self._key_event(self.DOWN_TO_UP, time_ms)
-
-	def _key_event(self, direction, time_ms):
 		delta_time = time_ms - self._last_key_time
 		self._last_key_time = time_ms
-		self._last_key_dir = direction
 
-		symbol = self.calculate_symbol(direction, delta_time, self.wpm())
+		symbol = self.calculate_symbol(delta_time, self.wpm())
 
 		if self.is_long_wait(delta_time):
 			symbol = cw_meta.NONE
@@ -36,36 +31,32 @@ class SymbolTracker:
 			self._symbol_queue.appendleft((symbol, delta_time))
 			self._letter_built.appendleft(symbol)
 
-		letter = None
-		if symbol == cw_meta.NEXT_WORD or symbol == cw_meta.NEXT_LETTER:
-			letter = cw_meta.find_letter(self._letter_built)
-			self._letter_built = collections.deque([], 6)
-
-			if symbol == cw_meta.NEXT_WORD:
-				letter += ' '
-
+	def next_letter(self):
+		letter = cw_meta.find_letter(self._letter_built)
+		self._letter_built = collections.deque([], 7)
 		return letter
 
-	def calculate_symbol(self, direction, delta_time, wpm):
+	def next_letter_timing(self):
+		wpm = self.wpm()
+		dit_length = cw_meta.dit_ms(wpm)
+		result = cw_meta.cw_timing[cw_meta.NEXT_LETTER] * dit_length / 1000
+		return result
+
+	def next_word_timing(self):
+		wpm = self.wpm()
+		dit_length = cw_meta.dit_ms(wpm)
+		result = cw_meta.cw_timing[cw_meta.NEXT_WORD] * dit_length / 1000
+		return result
+
+	def calculate_symbol(self, delta_time, wpm):
 		dit_length = cw_meta.dit_ms(wpm)
 		possible_dits = delta_time / dit_length
 
-		result = None
-		if direction == self.UP_TO_DOWN:
-			next_word_timing = (cw_meta.cw_timing[cw_meta.NEXT_LETTER] + cw_meta.cw_timing[cw_meta.NEXT_WORD]) / 2
-			if possible_dits < cw_meta.cw_timing[cw_meta.NEXT_LETTER]:
-				result = None
-			elif possible_dits < next_word_timing:
-				result = cw_meta.NEXT_LETTER
-			else:
-				result = cw_meta.NEXT_WORD
-
-		if direction == self.DOWN_TO_UP:
-			rounded = int(possible_dits)
-			if rounded <= cw_meta.cw_timing[cw_meta.DIT]:
-				result = cw_meta.DIT
-			else:
-				result = cw_meta.DAH
+		rounded = int(possible_dits)
+		if rounded <= cw_meta.cw_timing[cw_meta.DIT]:
+			result = cw_meta.DIT
+		else:
+			result = cw_meta.DAH
 
 		logging.debug(f"CW Symbol: `{result}`")
 		return result
@@ -90,4 +81,3 @@ class SymbolTracker:
 			result = True
 
 		return result
-
