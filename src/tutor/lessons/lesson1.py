@@ -7,6 +7,7 @@ from src.util import cw_meta
 class Lesson1(Lesson):
 	def __init__(self):
 		super().__init__()
+		self.number = 1
 		self.lesson_description = f"E: {cw_meta.formatted('E')}\nDo not worry about spacing, just focus on getting " \
 			"an even pace. Remember to leave a small interval between each pulse to indicate the end of a letter."
 

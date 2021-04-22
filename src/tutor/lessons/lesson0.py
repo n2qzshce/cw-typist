@@ -4,6 +4,7 @@ from src.tutor.lessons.lesson import Lesson
 class Lesson0(Lesson):
 	def __init__(self):
 		super().__init__()
+		self.number = 0
 		self.lesson_description = 'Free morse practice.'
 		self.target_text = ''
 

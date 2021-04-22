@@ -44,9 +44,18 @@ class WritingTutor:
 		self.key_event()
 
 	def load_lesson(self, num):
-		self._lesson = self._registry.lessons[num]()
+		load_num = num % len(self._registry.lessons.keys())
+		self._lesson = self._registry.lessons[load_num]()
 		self._lesson_description_box.text = self._lesson.lesson_description
 		self._lesson_textbox.text = self._lesson.target_text
+
+	def lesson_next(self):
+		num = self._lesson.number
+		self.load_lesson(num + 1)
+
+	def lesson_prev(self):
+		num = self._lesson.number
+		self.load_lesson(num - 1)
 
 	def key_event(self):
 		update_text = self._lesson.key_event(self.cw_textbox.text)

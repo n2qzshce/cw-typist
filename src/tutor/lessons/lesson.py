@@ -2,6 +2,7 @@ class Lesson:
 	def __init__(self):
 		self.lesson_description = ''
 		self.target_text = ''
+		self.number = Exception("Base method cannot be called")
 
 	def key_event(self, cw_textbox):
 		# this method is for any pre-processing or adjusting that needs to be done during the lesson.

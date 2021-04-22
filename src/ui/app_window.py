@@ -21,11 +21,14 @@ Config.set('input', 'mouse', 'mouse,disable_multitouch')
 
 class LayoutIds:
 	action_previous = 'action_previous'
+	clear_text = 'clear_text'
 	cw_lesson = 'cw_lesson'
 	cw_output = 'cw_output'
 	cw_button = 'cw_button'
 	exit_button = 'exit_button'
 	lesson_description = 'lesson_description'
+	lesson_next = 'lesson_next'
+	lesson_prev = 'lesson_prev'
 	nothing_button = 'nothing_button'
 	toggle_mute = 'toggle_mute'
 
@@ -90,11 +93,32 @@ BoxLayout:
 				font_size: dp(11)
 		BoxLayout:
 			padding: dp(40)
+			orientation: "vertical"
+			BoxLayout:
+				padding: dp(10)
+				size_hint: (1.0, 0.2)
+				orientation: "horizontal"
+				Button:
+					id: {LayoutIds.clear_text}
+					text: 'Clear output'
+					font_size: dp(14)
 			Button:
 				id : {LayoutIds.cw_button}
-				text: 'Doot'
+				text: 'CW Key'
 				font_size: dp(14)
 		BoxLayout:
+			orientation: "vertical"
+			BoxLayout:
+				size_hint: (1, 0.2)
+				padding: dp(10)
+				Button:
+					id: {LayoutIds.lesson_next}
+					text: 'Next lesson'
+					font_size: dp(14)
+				Button:
+					id: {LayoutIds.lesson_prev}
+					text: 'Previous lesson'
+					font_size: dp(14)
 			Label:
 				text_size: self.width, None
 				id: {LayoutIds.lesson_description}
@@ -173,6 +197,17 @@ class AppWindow(App):
 			cw_textbox=cw_textbox,
 			lesson_textbox=lesson_textbox,
 			lesson_description_box=lesson_description)
+
+		lesson_next = layout.ids[LayoutIds.lesson_next]
+		lesson_next.bind(on_press=self.lesson_next)
+		lesson_prev = layout.ids[LayoutIds.lesson_prev]
+		lesson_prev.bind(on_press=self.lesson_prev)
+
+	def lesson_next(self, event):
+		self._writing_tutor.lesson_next()
+
+	def lesson_prev(self, event):
+		self._writing_tutor.lesson_prev()
 
 	def toggle_mute(self, event):
 		mute = event.state == 'down'
