@@ -22,6 +22,13 @@ class SymbolTracker:
 	def keyed_up(self, time_ms):
 		return self._key_event(self.DOWN_TO_UP, time_ms)
 
+	def space_timing(self):
+		wpm = self.wpm()
+		next_word_timing = (cw_meta.cw_timing[cw_meta.NEXT_LETTER] + cw_meta.cw_timing[cw_meta.NEXT_WORD]) / 2
+		dit_length = cw_meta.dit_ms(wpm)
+		result = next_word_timing * dit_length / 1000
+		return result
+
 	def _key_event(self, direction, time_ms):
 		delta_time = time_ms - self._last_key_time
 		self._last_key_time = time_ms
@@ -37,12 +44,9 @@ class SymbolTracker:
 			self._letter_built.appendleft(symbol)
 
 		letter = None
-		if symbol == cw_meta.NEXT_WORD or symbol == cw_meta.NEXT_LETTER:
+		if symbol == cw_meta.NEXT_LETTER:
 			letter = cw_meta.find_letter(self._letter_built)
 			self._letter_built = collections.deque([], 7)
-
-			if symbol == cw_meta.NEXT_WORD:
-				letter += ' '
 
 		return letter
 
@@ -52,13 +56,10 @@ class SymbolTracker:
 
 		result = None
 		if direction == self.UP_TO_DOWN:
-			next_word_timing = (cw_meta.cw_timing[cw_meta.NEXT_LETTER] + cw_meta.cw_timing[cw_meta.NEXT_WORD]) / 2
 			if possible_dits < cw_meta.cw_timing[cw_meta.NEXT_LETTER]:
 				result = None
-			elif possible_dits < next_word_timing:
-				result = cw_meta.NEXT_LETTER
 			else:
-				result = cw_meta.NEXT_WORD
+				result = cw_meta.NEXT_LETTER
 
 		if direction == self.DOWN_TO_UP:
 			rounded = int(possible_dits)

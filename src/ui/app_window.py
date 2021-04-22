@@ -3,7 +3,6 @@ import os
 import sys
 
 from kivy.app import App
-from kivy.clock import Clock
 from kivy.config import Config
 from kivy.core.audio import SoundLoader
 from kivy.core.text import LabelBase
@@ -107,7 +106,6 @@ class AppWindow(App):
 	_sound = None
 	_writing_tutor = None
 	_key_lock = False
-	_end_typing_event = None
 
 	def build(self):
 		LabelBase.register(name='SourceCodePro', fn_regular='fonts/SourceCodePro-Regular.ttf')
@@ -204,17 +202,7 @@ class AppWindow(App):
 		return False
 
 	def cw_down(self, event):
-		if self._end_typing_event is not None:
-			self._end_typing_event.cancel()
-			self._end_typing_event = None
 		self._writing_tutor.cw_down(cw_meta.tick_ms())
 
 	def cw_up(self, event):
-		if self._end_typing_event is not None:
-			self._end_typing_event.cancel()
-			self._end_typing_event = None
 		self._writing_tutor.cw_up(cw_meta.tick_ms())
-		self._end_typing_event = Clock.schedule_once(callback=self.finish_typing, timeout=1)
-
-	def finish_typing(self, event):
-		self._writing_tutor.cw_done(cw_meta.tick_ms())

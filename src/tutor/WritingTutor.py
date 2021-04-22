@@ -1,5 +1,3 @@
-import logging
-
 from src.cw.SymbolTracker import SymbolTracker
 from src.tutor.lessons.lesson0 import Lesson0
 from src.tutor.lessons.lesson_registry import LessonRegistry
@@ -15,7 +13,7 @@ class WritingTutor:
 		self._lesson_textbox = lesson_textbox
 		self._lesson_description_box = lesson_description_box
 		self._lesson = None
-		self.load_lesson(1)
+		self.load_lesson(0)
 
 	def cw_down(self, tick):
 		symbol = self._cw.keyed_down(tick)
@@ -42,7 +40,7 @@ class WritingTutor:
 		raise Exception('This method still isn\'t quite right')
 
 	def load_lesson(self, num):
-		self._lesson = self._registry.lessons[num]
+		self._lesson = self._registry.lessons[num]()
 		self._lesson_description_box.text = self._lesson.lesson_description
 		self._lesson_textbox.text = self._lesson.target_text
 
