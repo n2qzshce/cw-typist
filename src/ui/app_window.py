@@ -74,13 +74,14 @@ BoxLayout:
 			Label:
 				text: 'Lesson'
 				size_hint_y: 0.075
-			TextInput:
+			Label:
 				id: {LayoutIds.cw_lesson}
 				font_name: 'SourceCodePro'
 				text: ''
 				size_hint: (1, 0.5)
 				readonly: True
 				font_size: dp(11)
+				markup: True
 			Label:
 				text: 'Your Input'
 				size_hint_y: 0.075
