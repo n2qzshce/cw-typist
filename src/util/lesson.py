@@ -1,6 +1,5 @@
 class Lesson:
 	def __init__(self):
-		self.number = Exception("Base method cannot be called")
 		self.lesson_title = Exception("Base method cannot be called")
 		self.lesson_description = Exception("Base method cannot be called")
 		self.target_text = ''

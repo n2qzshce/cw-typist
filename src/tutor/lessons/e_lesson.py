@@ -1,13 +1,12 @@
 import re
 
-from src.tutor.lessons.lesson import Lesson
+from src.util.lesson import Lesson
 from src.util import cw_meta
 
 
-class Lesson1(Lesson):
+class ELesson(Lesson):
 	def __init__(self):
 		super().__init__()
-		self.number = 1
 		self.lesson_title = f"E: {cw_meta.formatted('E')}"
 		self.lesson_description = f"The letter 'E' is represented with a short press of the CW key. Pause before sending" \
 			f" the next letter to indicate you are starting a new letter."

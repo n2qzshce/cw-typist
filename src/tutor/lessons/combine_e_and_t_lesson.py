@@ -1,13 +1,11 @@
 import re
 
-from src.tutor.lessons.lesson import Lesson
-from src.util import cw_meta
+from src.util.lesson import Lesson
 
 
-class Lesson4(Lesson):
+class CombineEandTLesson(Lesson):
 	def __init__(self):
 		super().__init__()
-		self.number = 4
 		self.lesson_title = f"E and T"
 		self.lesson_description = f"A 'dash' is generally around 3x as long as a 'dot.' Maintain a steady pace. A \"█\"" \
 			f" will represent an invalid character."

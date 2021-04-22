@@ -1,15 +1,15 @@
-from src.tutor.lessons.lesson0 import Lesson0
-from src.tutor.lessons.lesson1 import Lesson1
-from src.tutor.lessons.lesson2 import Lesson2
-from src.tutor.lessons.lesson3 import Lesson3
-from src.tutor.lessons.lesson4 import Lesson4
+from src.tutor.lessons.intro_lesson import IntroLesson
+from src.tutor.lessons.e_lesson import ELesson
+from src.tutor.lessons.t_lesson import TLesson
+from src.tutor.lessons.space_lesson import SpaceLesson
+from src.tutor.lessons.combine_e_and_t_lesson import CombineEandTLesson
 
 
 class LessonRegistry:
-	lessons = {
-		0: Lesson0,
-		1: Lesson1,
-		2: Lesson2,
-		3: Lesson3,
-		4: Lesson4,
-	}
+	lessons = [
+		IntroLesson,
+		ELesson,
+		TLesson,
+		SpaceLesson,
+		CombineEandTLesson,
+	]

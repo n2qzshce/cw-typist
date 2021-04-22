@@ -22,7 +22,8 @@ class WritingTutor:
 		self._next_word_event.cancel()
 		self._lesson_already_completed = False
 
-		self.load_lesson(0)
+		self._lesson_number = 0
+		self.load_lesson()
 
 	def cw_down(self, tick):
 		self.cw.keyed_down(tick)
@@ -46,9 +47,9 @@ class WritingTutor:
 		Clock.unschedule(self._next_word_event)
 		self.key_event()
 
-	def load_lesson(self, num):
-		load_num = num % len(self._registry.lessons.keys())
-		self._lesson = self._registry.lessons[load_num]()
+	def load_lesson(self):
+		self._lesson_number = self._lesson_number % len(self._registry.lessons)
+		self._lesson = self._registry.lessons[self._lesson_number]()
 		self._lesson_description_box.text = f"[b]{self._lesson.lesson_title}[/b]\n\n{self._lesson.lesson_description}"
 		self._lesson_textbox.text = self._lesson.target_text
 		self._lesson_already_completed = False
@@ -56,19 +57,18 @@ class WritingTutor:
 		self.key_event()
 
 	def lesson_next(self):
-		num = self._lesson.number
-		self.load_lesson(num + 1)
+		self._lesson_number += 1
+		self.load_lesson()
 
 	def lesson_prev(self):
-		num = self._lesson.number
-		self.load_lesson(num - 1)
+		self._lesson_number -= 1
+		self.load_lesson()
 
 	def reset_lesson(self):
-		num = self._lesson.number
-		self.load_lesson(num)
+		self.load_lesson()
 
 	def key_event(self):
-		if self._lesson_already_completed or self._lesson.number == 0:
+		if self._lesson_already_completed or self._lesson_number == 0:
 			return
 
 		update_text = self._lesson.key_event(self.cw_textbox.text)
