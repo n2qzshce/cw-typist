@@ -57,6 +57,10 @@ class WritingTutor:
 		num = self._lesson.number
 		self.load_lesson(num - 1)
 
+	def reset_lesson(self):
+		num = self._lesson.number
+		self.load_lesson(num)
+
 	def key_event(self):
 		update_text = self._lesson.key_event(self.cw_textbox.text)
 		self.cw_textbox.text = update_text

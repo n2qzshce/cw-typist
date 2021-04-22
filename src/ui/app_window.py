@@ -112,12 +112,12 @@ BoxLayout:
 				size_hint: (1, 0.2)
 				padding: dp(10)
 				Button:
-					id: {LayoutIds.lesson_next}
-					text: 'Next lesson'
-					font_size: dp(14)
-				Button:
 					id: {LayoutIds.lesson_prev}
 					text: 'Previous lesson'
+					font_size: dp(14)
+				Button:
+					id: {LayoutIds.lesson_next}
+					text: 'Next lesson'
 					font_size: dp(14)
 			Label:
 				text_size: self.width, None
@@ -214,6 +214,7 @@ class AppWindow(App):
 
 	def clear_text(self, event):
 		self._writing_tutor.cw_textbox.text = ''
+		self._writing_tutor.reset_lesson()
 
 	def toggle_mute(self, event):
 		mute = event.state == 'down'
