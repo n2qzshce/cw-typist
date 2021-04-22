@@ -67,4 +67,3 @@ class WritingTutor:
 
 	def complete_lesson(self):
 		self._lesson_textbox.text += "\nGood job!"
-		self._lesson = Lesson0()
