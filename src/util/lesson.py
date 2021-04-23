@@ -10,3 +10,6 @@ class Lesson:
 
 	def is_complete(self, cw_text):
 		return self.target_text == cw_text
+
+	def is_quiz(self):
+		return False

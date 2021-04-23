@@ -3,7 +3,7 @@ import re
 from src.util.lesson import Lesson
 
 
-class CombineEandTLesson(Lesson):
+class Lesson4CombineEandT(Lesson):
 	def __init__(self):
 		super().__init__()
 		self.lesson_title = f"E and T"

@@ -1,7 +1,7 @@
 from src.util.lesson import Lesson
 
 
-class IntroLesson(Lesson):
+class Lesson0Intro(Lesson):
 	def __init__(self):
 		super().__init__()
 		self.lesson_title = 'Free morse practice.'

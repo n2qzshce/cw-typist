@@ -3,7 +3,7 @@ import re
 from src.util.lesson import Lesson
 
 
-class SpaceLesson(Lesson):
+class Lesson3Space(Lesson):
 	def __init__(self):
 		super().__init__()
 		self.lesson_title = "Spacing:"
