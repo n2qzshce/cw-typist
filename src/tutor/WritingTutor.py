@@ -56,7 +56,7 @@ class WritingTutor:
 		if self._lesson.is_quiz():
 			self.cw_textbox.password = True
 		else:
-			self.cw_textbox.password = True
+			self.cw_textbox.password = False
 		self.key_event()
 
 	def lesson_next(self):
