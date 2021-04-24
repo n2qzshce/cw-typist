@@ -6,7 +6,7 @@ block_cipher = None
 
 a = Analysis(['cw_typist.py'],
              binaries=[],
-             datas=[('images', 'images'), ('fonts', 'fonts'), ('sounds', 'sounds')],
+             datas=[('resources','resources')],
              hiddenimports=[],
              hookspath=[],
              runtime_hooks=[],
@@ -31,4 +31,4 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=False , icon='images/cw_typist.ico')
+          console=False , icon='resources/images/cw_typist.ico')
