@@ -12,6 +12,7 @@ from kivy.metrics import dp
 from kivy.resources import resource_add_path, resource_find
 
 from src import cw_typist_version
+from src.tutor.ReadingTutor import ReadingTutor
 from src.tutor.WritingTutor import WritingTutor
 from src.ui import layout_pc
 from src.ui.layout_pc import LayoutIds
@@ -24,8 +25,12 @@ class AppWindow(App):
 	force_debug = False
 	_sound = None
 	_writing_tutor = None
+	_reading_tutor = None
 	_key_lock = False
 	_wpm_box = None
+	_writing_layout = None
+	_reading_layout = None
+	_content_block = None
 
 	def build(self):
 		if hasattr(sys, '_MEIPASS'):
@@ -35,6 +40,9 @@ class AppWindow(App):
 
 		LabelBase.register(name='SourceCodePro', fn_regular=resource_find('fonts/SourceCodePro-Regular.ttf'))
 		layout = Builder.load_string(layout_pc.kv)
+		self._writing_layout = Builder.load_string(layout_pc.write_lesson_panel)
+		self._reading_layout = Builder.load_string(layout_pc.read_lesson_panel)
+		self._content_block = layout.ids[LayoutIds.content_panel]
 
 		self.icon = resource_find('images/cw_typist.ico')
 		action_previous = layout.ids[LayoutIds.action_previous]
@@ -48,12 +56,18 @@ class AppWindow(App):
 
 		self.title = f'CW Typist v{cw_typist_version.version}'
 
+		self._bind_lesson_buttons(layout)
 		self._bind_file_menu(layout)
 		self._bind_sound_menu(layout)
 		self._bind_help_menu(layout)
-		self._bind_main_view(layout)
-
+		self._bind_write_layout(self._writing_layout)
+		self._bind_read_layout(self._reading_layout)
+		self.switch_to_write(None)
 		return layout
+
+	def _bind_lesson_buttons(self, layout):
+		layout.ids[LayoutIds.switch_lesson_write].bind(on_press=self.switch_to_write)
+		layout.ids[LayoutIds.switch_lesson_read].bind(on_press=self.switch_to_read)
 
 	def _bind_file_menu(self, layout):
 		exit_button = layout.ids[LayoutIds.exit_button]
@@ -66,7 +80,7 @@ class AppWindow(App):
 	def _bind_help_menu(self, layout):
 		pass
 
-	def _bind_main_view(self, layout):
+	def _bind_write_layout(self, layout):
 		cw_button = layout.ids[LayoutIds.cw_button]
 		cw_button.bind(on_press=self.cw_down)
 		cw_button.bind(on_release=self.cw_up)
@@ -94,6 +108,10 @@ class AppWindow(App):
 
 		self._wpm_box = layout.ids[LayoutIds.wpm_display]
 
+	def _bind_read_layout(self, layout):
+		self._reading_tutor = ReadingTutor()
+		pass
+
 	def lesson_next(self, event):
 		self._writing_tutor.lesson_next()
 
@@ -103,6 +121,18 @@ class AppWindow(App):
 	def clear_text(self, event):
 		self._writing_tutor.cw_textbox.text = ''
 		self._writing_tutor.reset_lesson()
+
+	def switch_to_write(self, event):
+		self._content_block.remove_widget(self._reading_layout)
+		self._content_block.remove_widget(self._writing_layout)
+		self._content_block.add_widget(self._writing_layout)
+		pass
+
+	def switch_to_read(self, event):
+		self._content_block.remove_widget(self._writing_layout)
+		self._content_block.remove_widget(self._reading_layout)
+		self._content_block.add_widget(self._reading_layout)
+		pass
 
 	def toggle_mute(self, event):
 		mute = event.state == 'down'
@@ -117,30 +147,32 @@ class AppWindow(App):
 			return False
 
 		self._key_lock = True
-		logging.debug(f"Keycode1 dn: `{key}`")
+		# logging.debug(f"Keycode1 dn: `{key}`")
 
 		if key == Keyboard.keycodes['escape']:
 			self.stop()
 			return True
 		if key == Keyboard.keycodes['enter'] or key == Keyboard.keycodes['spacebar']:
-			self._writing_tutor.cw_down(cw_meta.tick_ms())
+			self.cw_down(None)
 			return True
 		return False
 
 	def key_up_handler(self, window, key, code):
 		self._key_lock = False
-		logging.debug(f"Keycode1 up: `{key}`")
+		# logging.debug(f"Keycode1 up: `{key}`")
 		if key == Keyboard.keycodes['enter'] or key == Keyboard.keycodes['spacebar']:
-			self._writing_tutor.cw_up(cw_meta.tick_ms())
+			self.cw_up(None)
 			return True
 		return False
 
 	def cw_down(self, event):
+		logging.debug("cw_down")
 		self._sound.play()
 		self._writing_tutor.cw_down(cw_meta.tick_ms())
 		self._writing_tutor.cw_textbox.focus = True
 
 	def cw_up(self, event):
+		logging.debug("cw_up")
 		self._sound.stop()
 		self._writing_tutor.cw_up(cw_meta.tick_ms())
 		self._writing_tutor.cw_textbox.focus = True

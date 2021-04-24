@@ -1,6 +1,6 @@
 import time
 
-starting_rate = 240  # milliseconds
+starting_rate = 200  # milliseconds
 
 NONE = None
 DIT = 'DIT'
@@ -12,8 +12,8 @@ cw_timing = {
 	NONE: 1,
 	DIT: 1,
 	DAH: 3,
-	NEXT_LETTER: 3,
-	NEXT_WORD: 7,
+	NEXT_LETTER: 2,
+	NEXT_WORD: 5,
 }
 
 cw_printed = {

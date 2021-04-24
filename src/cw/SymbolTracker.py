@@ -2,7 +2,7 @@ import collections
 import logging
 
 from src.util import cw_meta
-
+from statistics import median
 
 class SymbolTracker:
 	DOWN_TO_UP = 'DOWN_TO_UP'
@@ -49,7 +49,15 @@ class SymbolTracker:
 		return result
 
 	def calculate_symbol(self, delta_time, wpm):
-		dit_length = cw_meta.dit_ms(wpm)
+		times = []
+		for x in self._symbol_queue:
+			apnd_time = x[1]
+			if x[0] == cw_meta.DAH:
+				apnd_time = x[1] / cw_meta.cw_timing[cw_meta.DAH]
+			times.append(apnd_time)
+		logging.info(times)
+		logging.debug(f"Delta: {delta_time} Median: {median(times)}")
+		dit_length = median(times)
 		possible_dits = delta_time / dit_length
 
 		rounded = int(possible_dits)
