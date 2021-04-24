@@ -4,7 +4,7 @@ from src.util.lesson import Lesson
 from src.util import cw_meta
 
 
-class TLesson(Lesson):
+class Lesson2T(Lesson):
 	def __init__(self):
 		super().__init__()
 		self.lesson_title = f"T: {cw_meta.formatted('T')}"
