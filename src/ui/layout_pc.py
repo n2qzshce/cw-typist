@@ -58,9 +58,10 @@ BoxLayout:
 				id: {LayoutIds.cw_lesson}
 				font_name: 'SourceCodePro'
 				text: ''
+				text_size: self.width, None
 				size_hint: (1, 0.5)
 				readonly: True
-				font_size: dp(11)
+				font_size: dp(18)
 				markup: True
 			Label:
 				text: 'Your Input'
@@ -71,7 +72,7 @@ BoxLayout:
 				text: ''
 				size_hint: (1, 0.5)
 				readonly: True
-				font_size: dp(11)
+				font_size: dp(13)
 		BoxLayout:
 			padding: dp(40)
 			orientation: "vertical"
@@ -82,11 +83,11 @@ BoxLayout:
 				Button:
 					id: {LayoutIds.clear_text}
 					text: 'Clear output'
-					font_size: dp(14)
+					font_size: dp(16)
 			Button:
 				id : {LayoutIds.cw_button}
 				text: 'CW Key'
-				font_size: dp(14)
+				font_size: dp(16)
 			Label:
 				size_hint: (1, 0.1)
 				id: {LayoutIds.wpm_display}
@@ -96,18 +97,19 @@ BoxLayout:
 			orientation: "vertical"
 			BoxLayout:
 				size_hint: (1, 0.2)
-				padding: dp(10)
+				padding: dp(12)
 				Button:
 					id: {LayoutIds.lesson_prev}
 					text: 'Previous lesson'
-					font_size: dp(14)
+					font_size: dp(16)
 				Button:
 					id: {LayoutIds.lesson_next}
 					text: 'Next lesson'
-					font_size: dp(14)
+					font_size: dp(16)
 			Label:
 				id: {LayoutIds.lesson_description}
 				text_size: self.width, None
+				padding: (dp(12), dp(12))
 				size_hint: (1, 0.3)
 				text: ''
 				markup: True

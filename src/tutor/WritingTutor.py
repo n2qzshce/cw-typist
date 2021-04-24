@@ -1,10 +1,9 @@
 import difflib
-import logging
 
 from kivy.clock import Clock
 
 from src.cw.SymbolTracker import SymbolTracker
-from src.tutor.lessons.lesson_registry import LessonRegistry
+from src.tutor.lessons.lib.lesson_registry import LessonRegistry
 from src.util import cw_meta
 
 
@@ -54,6 +53,10 @@ class WritingTutor:
 		self._lesson_textbox.text = self._lesson.target_text
 		self._lesson_already_completed = False
 		self.cw_textbox.text = ''
+		if self._lesson.is_quiz():
+			self.cw_textbox.password = True
+		else:
+			self.cw_textbox.password = False
 		self.key_event()
 
 	def lesson_next(self):
@@ -76,11 +79,12 @@ class WritingTutor:
 		current_char = self._correct_bad_space()
 
 		lesson_text = self._lesson.target_text
-		replace_text = f"{lesson_text[:current_char]}" \
-			f"[u]{self._lesson.target_text[current_char]}[/u]" \
-			f"{lesson_text[current_char+1:]}"
 
-		self._lesson_textbox.text = replace_text
+		if not self._lesson.is_quiz():
+			replace_text = f"{lesson_text[:current_char]}" \
+				f"[u]{self._lesson.target_text[current_char]}[/u]" \
+				f"{lesson_text[current_char+1:]}"
+			self._lesson_textbox.text = replace_text
 
 		if self._lesson.is_complete(self.cw_textbox.text):
 			self.complete_lesson()
@@ -108,6 +112,7 @@ class WritingTutor:
 	def complete_lesson(self):
 		if self._lesson_already_completed:
 			return
+		self.cw_textbox.password = False
 		self._lesson_already_completed = True
 		self._lesson_textbox.text += "\nGood job!"
 		self.cw_textbox.text += "\n"
@@ -116,7 +121,14 @@ class WritingTutor:
 		if self._lesson_already_completed:
 			return
 		self._lesson_already_completed = True
+		self.cw_textbox.password = False
 		diff = difflib.SequenceMatcher(a=self._lesson.target_text, b=self.cw_textbox.text)
 		match_pct = diff.ratio() * 100
 		self._lesson_textbox.text += f"\nLesson complete.\nAccuracy: {match_pct:2.0f}%"
+
+		if self._lesson.is_quiz():
+			flavor_text = "They missed your message! Try again?"
+			if match_pct > 90:
+				flavor_text = "A few typos, but you nailed it."
+			self._lesson_textbox.text += f"\n{flavor_text}"
 		return

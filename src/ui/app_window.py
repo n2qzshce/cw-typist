@@ -75,6 +75,8 @@ class AppWindow(App):
 		# self._sound.volume = 0
 		# self._sound.play()
 		cw_textbox = layout.ids[LayoutIds.cw_output]
+		cw_textbox.password_mask = ''
+
 		lesson_textbox = layout.ids[LayoutIds.cw_lesson]
 		lesson_description = layout.ids[LayoutIds.lesson_description]
 		self._writing_tutor = WritingTutor(
