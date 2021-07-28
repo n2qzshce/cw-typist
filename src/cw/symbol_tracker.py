@@ -1,8 +1,9 @@
 import collections
 import logging
+from statistics import median
 
 from src.util import cw_meta
-from statistics import median
+
 
 class SymbolTracker:
 	DOWN_TO_UP = 'DOWN_TO_UP'

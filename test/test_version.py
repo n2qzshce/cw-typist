@@ -1,6 +1,5 @@
 import logging
 import os
-import unittest
 
 import requests
 from semantic_version import Version

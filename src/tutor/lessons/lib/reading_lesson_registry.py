@@ -1,0 +1,5 @@
+
+
+class ListeningLessonRegistry:
+	lessons = [
+	]

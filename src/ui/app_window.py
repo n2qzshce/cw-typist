@@ -12,8 +12,8 @@ from kivy.metrics import dp
 from kivy.resources import resource_add_path, resource_find
 
 from src import cw_typist_version
-from src.tutor.ReadingTutor import ReadingTutor
-from src.tutor.WritingTutor import WritingTutor
+from src.tutor.reading_tutor import ReadingTutor
+from src.tutor.writing_tutor import WritingTutor
 from src.ui import layout_pc
 from src.ui.layout_pc import LayoutIds
 from src.util import cw_meta

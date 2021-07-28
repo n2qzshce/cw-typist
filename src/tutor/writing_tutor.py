@@ -1,13 +1,11 @@
 import difflib
-import re
 
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.metrics import dp
-from kivy.uix.label import Label
 
-from src.cw.SymbolTracker import SymbolTracker
-from src.tutor.lessons.lib.lesson_registry import LessonRegistry
+from src.cw.symbol_tracker import SymbolTracker
+from src.tutor.lessons.lib.writing_lesson_registry import WritingLessonRegistry
 from src.util import cw_meta
 
 bound_label = """
@@ -21,7 +19,7 @@ Label:
 
 class WritingTutor:
 	def __init__(self, cw_textbox, lesson_textbox, lesson_description_box):
-		self._registry = LessonRegistry()
+		self._registry = WritingLessonRegistry()
 		self.cw = SymbolTracker()
 		self.cw_textbox = cw_textbox
 		self._lesson_textbox = lesson_textbox
