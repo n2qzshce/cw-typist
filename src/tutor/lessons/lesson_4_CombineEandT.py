@@ -11,7 +11,6 @@ class Lesson4CombineEandT(Lesson):
 			f" will represent an invalid character."
 
 		self.target_text = 'T T TT E E EE ET TE ET TE ETET TETE ETET TETE'
-		# self.target_text = 'LOREM IPSUM DOLOR SON AMET'
 
 	def key_event(self, cw_text):
 		cw_text = re.sub("[^(TE )]", '█', cw_text)

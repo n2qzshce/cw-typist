@@ -33,7 +33,7 @@ class WritingTutor:
 		self._next_word_event.cancel()
 		self._lesson_already_completed = False
 
-		self._lesson_number = 4
+		self._lesson_number = 0
 		self.load_lesson()
 
 	def cw_down(self, tick):
