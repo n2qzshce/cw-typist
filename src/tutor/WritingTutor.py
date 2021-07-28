@@ -1,6 +1,8 @@
 import difflib
 
 from kivy.clock import Clock
+from kivy.metrics import dp
+from kivy.uix.label import Label
 
 from src.cw.SymbolTracker import SymbolTracker
 from src.tutor.lessons.lib.lesson_registry import LessonRegistry
@@ -21,7 +23,7 @@ class WritingTutor:
 		self._next_word_event.cancel()
 		self._lesson_already_completed = False
 
-		self._lesson_number = 0
+		self._lesson_number = 4
 		self.load_lesson()
 
 	def cw_down(self, tick):
@@ -76,15 +78,7 @@ class WritingTutor:
 
 		update_text = self._lesson.key_event(self.cw_textbox.text)
 		self.cw_textbox.text = update_text
-		current_char = self._correct_bad_space()
-
-		lesson_text = self._lesson.target_text
-
-		if not self._lesson.is_quiz():
-			replace_text = f"{lesson_text[:current_char]}" \
-				f"[u]{self._lesson.target_text[current_char]}[/u]" \
-				f"{lesson_text[current_char+1:]}"
-			self._lesson_textbox.text = replace_text
+		self._set_lesson_text()
 
 		if self._lesson.is_complete(self.cw_textbox.text):
 			self.complete_lesson()
@@ -94,7 +88,7 @@ class WritingTutor:
 			return
 		pass
 
-	def _correct_bad_space(self):
+	def _correct_bad_space_and_get_char_index(self):
 		current_char = min(len(self._lesson.target_text) - 1, len(self.cw_textbox.text))
 		if current_char <= 0:
 			return current_char
@@ -114,7 +108,7 @@ class WritingTutor:
 			return
 		self.cw_textbox.password = False
 		self._lesson_already_completed = True
-		self._lesson_textbox.text += "\nGood job!"
+		# self._lesson_textbox.text += "\nGood job!"
 		self.cw_textbox.text += "\n"
 
 	def display_accuracy(self):
@@ -124,11 +118,47 @@ class WritingTutor:
 		self.cw_textbox.password = False
 		diff = difflib.SequenceMatcher(a=self._lesson.target_text, b=self.cw_textbox.text)
 		match_pct = diff.ratio() * 100
-		self._lesson_textbox.text += f"\nLesson complete.\nAccuracy: {match_pct:2.0f}%"
+		# self._lesson_textbox.text += f"\nLesson complete.\nAccuracy: {match_pct:2.0f}%"
 
 		if self._lesson.is_quiz():
 			flavor_text = "They missed your message! Try again?"
 			if match_pct > 90:
 				flavor_text = "A few typos, but you nailed it."
-			self._lesson_textbox.text += f"\n{flavor_text}"
+			# self._lesson_textbox.text += f"\n{flavor_text}"
 		return
+
+	def _set_lesson_text(self):
+		lesson_text = self._lesson.target_text
+		current_char = self._correct_bad_space_and_get_char_index()
+		if not self._lesson.is_quiz():
+			replace_text = f"{lesson_text[:current_char]}" \
+				f"[u]{self._lesson.target_text[current_char]}[/u]" \
+				f"{lesson_text[current_char+1:]}"
+		else:
+			replace_text = lesson_text
+
+		split = replace_text.split(' ')
+
+		self._lesson_textbox.clear_widgets()
+
+		for i in range(0, len(split)-1):
+			label = Label(
+				text=split[i],
+				font_size=dp(18),
+				font_name='SourceCodePro',
+				markup=True,
+			)
+			label.size_hint = (None, 0.1)
+			label.size_hint_max_y = label.text_size[1]
+			label.size = label.texture_size
+			label.width = dp(12) * len(lesson_text.split(' ')[i]) + dp(12)
+			self._lesson_textbox.add_widget(label)
+
+		# font_name: 'SourceCodePro'
+		# text: ''
+		# text_size: self.width, None
+		# size_hint: (1, 0.5)
+		# readonly: True
+		# font_size: dp(18)
+		# markup: True
+		pass
