@@ -50,6 +50,7 @@ class WritingTutor:
 		self.key_event()
 
 	def load_lesson(self):
+		self._lesson_textbox.clear_widgets()
 		self._lesson_number = self._lesson_number % len(self._registry.lessons)
 		self._lesson = self._registry.lessons[self._lesson_number]()
 		self._lesson_description_box.text = f"[b]{self._lesson.lesson_title}[/b]\n\n{self._lesson.lesson_description}"
@@ -109,7 +110,7 @@ class WritingTutor:
 			return
 		self.cw_textbox.password = False
 		self._lesson_already_completed = True
-		# self._lesson_textbox.text += "\nGood job!"
+		self.display_conclusion_flavortext("Good job!")
 		self.cw_textbox.text += "\n"
 
 	def display_accuracy(self):
@@ -119,28 +120,22 @@ class WritingTutor:
 		self.cw_textbox.password = False
 		diff = difflib.SequenceMatcher(a=self._lesson.target_text, b=self.cw_textbox.text)
 		match_pct = diff.ratio() * 100
-		# self._lesson_textbox.text += f"\nLesson complete.\nAccuracy: {match_pct:2.0f}%"
+		self.display_conclusion_flavortext(f"\nLesson complete.\nAccuracy: {match_pct:2.0f}%")
 
 		if self._lesson.is_quiz():
 			flavor_text = "They missed your message! Try again?"
 			if match_pct > 90:
 				flavor_text = "A few typos, but you nailed it."
-			# self._lesson_textbox.text += f"\n{flavor_text}"
+			self.display_conclusion_flavortext(f"\n{flavor_text}")
 		return
 
 	def _set_lesson_text(self):
+		self._lesson_textbox.clear_widgets()
+
 		lesson_text = self._lesson.target_text
 		current_char = self._correct_bad_space_and_get_char_index()
-		if not self._lesson.is_quiz():
-			replace_text = f"{lesson_text[:current_char]}" \
-				f"[u]{self._lesson.target_text[current_char]}[/u]" \
-				f"{lesson_text[current_char+1:]}"
-		else:
-			replace_text = lesson_text
 
 		split = lesson_text.split(' ')
-
-		self._lesson_textbox.clear_widgets()
 
 		ordered_children = list()
 		for i in split:
@@ -157,14 +152,28 @@ class WritingTutor:
 			self._lesson_textbox.add_widget(label)
 			ordered_children.append(label)
 
-		chrs_count = 0
+		chars_count = 0
 		for i in ordered_children:
-			if chrs_count + len(i.text) > current_char:
-				in_str_index = current_char - chrs_count
+			if self._lesson.is_quiz():
+				break
+			if chars_count + len(i.text) > current_char:
+				in_str_index = current_char - chars_count
 				replace_text = f"{i.text[:in_str_index]}" \
 								f"[u]{i.text[in_str_index]}[/u]" \
 								f"{i.text[in_str_index + 1:]}"
 				i.text = replace_text
 				break
-			chrs_count += len(i.text)
-		pass
+			chars_count += len(i.text)
+		return
+
+	def display_conclusion_flavortext(self, text):
+			label = Label(
+				text=text,
+				font_size=dp(18),
+				markup=True,
+				color=[0.90, 0.90, 0.10, 1.0]
+			)
+			label.size_hint_x = 1
+			label.padding_y = dp(18)
+			self._lesson_textbox.add_widget(label)
+
