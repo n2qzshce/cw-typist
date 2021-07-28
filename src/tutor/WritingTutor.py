@@ -1,4 +1,5 @@
 import difflib
+import re
 
 from kivy.clock import Clock
 from kivy.metrics import dp
@@ -137,13 +138,14 @@ class WritingTutor:
 		else:
 			replace_text = lesson_text
 
-		split = replace_text.split(' ')
+		split = lesson_text.split(' ')
 
 		self._lesson_textbox.clear_widgets()
 
-		for i in range(0, len(split)-1):
+		ordered_children = list()
+		for i in split:
 			label = Label(
-				text=split[i],
+				text=i+' ',
 				font_size=dp(18),
 				font_name='SourceCodePro',
 				markup=True,
@@ -151,14 +153,18 @@ class WritingTutor:
 			label.size_hint = (None, 0.1)
 			label.size_hint_max_y = label.text_size[1]
 			label.size = label.texture_size
-			label.width = dp(12) * len(lesson_text.split(' ')[i]) + dp(12)
+			label.width = dp(12) * len(i) + dp(12)
 			self._lesson_textbox.add_widget(label)
+			ordered_children.append(label)
 
-		# font_name: 'SourceCodePro'
-		# text: ''
-		# text_size: self.width, None
-		# size_hint: (1, 0.5)
-		# readonly: True
-		# font_size: dp(18)
-		# markup: True
+		chrs_count = 0
+		for i in ordered_children:
+			if chrs_count + len(i.text) > current_char:
+				in_str_index = current_char - chrs_count
+				replace_text = f"{i.text[:in_str_index]}" \
+								f"[u]{i.text[in_str_index]}[/u]" \
+								f"{i.text[in_str_index + 1:]}"
+				i.text = replace_text
+				break
+			chrs_count += len(i.text)
 		pass
