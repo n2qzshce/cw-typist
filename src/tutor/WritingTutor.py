@@ -2,6 +2,7 @@ import difflib
 import re
 
 from kivy.clock import Clock
+from kivy.lang import Builder
 from kivy.metrics import dp
 from kivy.uix.label import Label
 
@@ -9,6 +10,14 @@ from src.cw.SymbolTracker import SymbolTracker
 from src.tutor.lessons.lib.lesson_registry import LessonRegistry
 from src.util import cw_meta
 
+bound_label = """
+Label:
+	size: self.texture_size
+	font_size: dp(18)
+	font_name: 'SourceCodePro'
+	markup: True
+	size_hint: (None, None)
+"""
 
 class WritingTutor:
 	def __init__(self, cw_textbox, lesson_textbox, lesson_description_box):
@@ -139,16 +148,9 @@ class WritingTutor:
 
 		ordered_children = list()
 		for i in split:
-			label = Label(
-				text=i+' ',
-				font_size=dp(18),
-				font_name='SourceCodePro',
-				markup=True,
-			)
-			label.size_hint = (None, 0.1)
-			label.size_hint_max_y = label.text_size[1]
-			label.size = label.texture_size
-			label.width = dp(12) * len(i) + dp(12)
+
+			label = Builder.load_string(bound_label)
+			label.text = i+' '
 			self._lesson_textbox.add_widget(label)
 			ordered_children.append(label)
 
@@ -167,13 +169,12 @@ class WritingTutor:
 		return
 
 	def display_conclusion_flavortext(self, text):
-			label = Label(
-				text=text,
-				font_size=dp(18),
-				markup=True,
-				color=[0.90, 0.90, 0.10, 1.0]
-			)
+			label = Builder.load_string(bound_label)
+			label.text = text
+			label.color = [0.90, 0.90, 0.10, 1.0]
+			label.font_name = 'Roboto'
 			label.size_hint_x = 1
 			label.padding_y = dp(18)
+
 			self._lesson_textbox.add_widget(label)
 
