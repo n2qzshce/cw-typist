@@ -85,11 +85,27 @@ def find_letter(sequence):
 	return result
 
 
+def build_sequence(message):
+	result = list()
+
+	for x in range(0, len(message)):
+		if message[x] == ' ':
+			if len(result) > 1 and result[-1] == NEXT_LETTER:
+				result.pop(-1)
+			result.append(NEXT_WORD)
+			continue
+		result = result + cw_dict[message[x]] + [NEXT_LETTER]
+
+	if result[-1] == NEXT_LETTER:
+		result.pop(-1)
+	return result
+
+
 def wpm(dit_length_ms):
 	return 60 / (50 * dit_length_ms / 1000)
 
 
-def dit_ms(words_per_minute):
+def symbol_ms(words_per_minute, symbol):
 	return 60 / (50 * words_per_minute) * 1000
 
 

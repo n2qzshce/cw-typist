@@ -108,14 +108,22 @@ class AppWindow(App):
 		clear_button.bind(on_press=self.write_clear_text)
 
 		self._wpm_box = layout.ids[WriteLayoutIds.wpm_display]
+		self._wpm_box.text = f"WPM: {self._writing_tutor.cw.wpm():.0f}"
 
 	def _bind_read_layout(self, layout):
 		self._sound = SoundLoader.load('sounds/morse.wav')
 		textbox = layout.ids[ListenLayoutIds.cw_lesson]
 		description = layout.ids[ListenLayoutIds.lesson_description]
-		self._listen_tutor = ListeningTutor(cw_textbox=textbox, lesson_description_box=description)
+		self._listen_tutor = ListeningTutor(
+			cw_textbox=textbox,
+			lesson_description_box=description,
+			sound=self._sound,
+			sound_indicator=None)
 		submit_button = layout.ids[ListenLayoutIds.listen_submit]
 		submit_button.bind(on_press=self.listen_submit)
+
+		play_button = layout.ids[ListenLayoutIds.play_message]
+		play_button.bind(on_press=self.listen_play_message)
 
 	def write_lesson_next(self, event):
 		self._writing_tutor.lesson_next()
@@ -136,6 +144,9 @@ class AppWindow(App):
 	def listen_submit(self, event):
 		self._listen_tutor.cw_textbox.text = ''
 		self._listen_tutor.reset_lesson()
+
+	def listen_play_message(self, event):
+		self._listen_tutor.play_message()
 
 	def switch_to_write(self, event):
 		self._content_block.remove_widget(self._reading_layout)

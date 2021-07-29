@@ -14,7 +14,7 @@ class ListenLayoutIds:
 	lesson_prev = 'lesson_prev'
 	lesson_next = 'lesson_next'
 	lesson_description = 'lesson_description'
-	listen_again = 'listen_again'
+	play_message = 'listen_again'
 
 	listen_lesson_panel = 'listen_lesson_panel'
 	listen_submit = 'listen_submit'
@@ -137,7 +137,7 @@ BoxLayout:
 			size_hint: (1.0, 0.2)
 			orientation: "horizontal"
 			Button:
-				id: {ListenLayoutIds.listen_again}
+				id: {ListenLayoutIds.play_message}
 				text: 'Play Message'
 				font_size: dp(16)
 		AnchorLayout:

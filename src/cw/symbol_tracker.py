@@ -39,13 +39,13 @@ class SymbolTracker:
 
 	def next_letter_timing(self):
 		wpm = self.wpm()
-		dit_length = cw_meta.dit_ms(wpm)
+		dit_length = cw_meta.symbol_ms(wpm, cw_meta.DIT)
 		result = cw_meta.cw_timing[cw_meta.NEXT_LETTER] * dit_length / 1000
 		return result
 
 	def next_word_timing(self):
 		wpm = self.wpm()
-		dit_length = cw_meta.dit_ms(wpm)
+		dit_length = cw_meta.symbol_ms(wpm, cw_meta.DIT)
 		result = cw_meta.cw_timing[cw_meta.NEXT_WORD] * dit_length / 1000
 		return result
 
