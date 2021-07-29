@@ -9,15 +9,16 @@ class LayoutIds:
 
 class ListenLayoutIds:
 	answer_input = 'answer_input'
+	canvas = 'canvas'
 	cw_button = 'cw_button'
 	cw_lesson = 'cw_lesson'
+	lamp = 'lamp'
 	lesson_prev = 'lesson_prev'
 	lesson_next = 'lesson_next'
 	lesson_description = 'lesson_description'
-	play_message = 'listen_again'
-
 	listen_lesson_panel = 'listen_lesson_panel'
 	listen_submit = 'listen_submit'
+	play_message = 'listen_again'
 	queue_light = 'queue_light'
 	wpm_display = 'wpm_display'
 
@@ -114,7 +115,9 @@ BoxLayout:
 		orientation: "vertical"
 		Label:
 			id: {ListenLayoutIds.cw_lesson}
-			size_hint: (1, 0.15)
+			size_hint: (1, 0.30)
+			markup: True
+			color: [0.90, 0.90, 0.10, 1.0]
 		Label:
 			text: 'Your Input'
 			size_hint_y: 0.075
@@ -122,7 +125,7 @@ BoxLayout:
 			id: {ListenLayoutIds.answer_input}
 			font_name: 'SourceCodePro'
 			text: ''
-			size_hint: (1, 0.5)
+			size_hint: (1, 0.30)
 			font_size: dp(13)
 		Button:
 			id: {ListenLayoutIds.listen_submit}
@@ -144,8 +147,13 @@ BoxLayout:
 			size_hint: (1.0, 0.8)
 			anchor_x: 'center'
 			anchor_y: 'center'
+			id: {ListenLayoutIds.canvas}
 			canvas:
+				Color:
+					group: '{ListenLayoutIds.lamp}'
+					rgb: (0.4, 0.4, 0.4)
 				Ellipse:
+					group: '{ListenLayoutIds.lamp}'
 					size: min(self.size)*0.66, min(self.size)*0.66
 					pos: self.center_x - min(self.size) * 0.33, self.center_y - min(self.size) * 0.33
 		Label:
@@ -192,7 +200,7 @@ BoxLayout:
 				text: "Write Mode"
 			ActionButton:
 				id: {LayoutIds.switch_lesson_read}
-				text: "Read Mode"
+				text: "Listen Mode"
 			ActionSeparator:
 				important: True
 			ActionGroup:

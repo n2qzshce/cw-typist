@@ -9,3 +9,4 @@ class Listen1E(ListenLesson):
 		self.lesson_description = f"The letter 'E' is represented with a short pulse."
 
 		self.target_text = 'EEEE'
+

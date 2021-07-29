@@ -106,7 +106,7 @@ def wpm(dit_length_ms):
 
 
 def symbol_ms(words_per_minute, symbol):
-	return 60 / (50 * words_per_minute) * 1000
+	return 60 / (50 * words_per_minute) * 1000 * cw_timing[symbol]
 
 
 def tick_ms():
