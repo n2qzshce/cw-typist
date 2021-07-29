@@ -12,20 +12,21 @@ from kivy.metrics import dp
 from kivy.resources import resource_add_path, resource_find
 
 from src import cw_typist_version
-from src.tutor.reading_tutor import ReadingTutor
+from src.tutor.ListeningTutor import ListeningTutor
 from src.tutor.writing_tutor import WritingTutor
 from src.ui import layout_pc
-from src.ui.layout_pc import LayoutIds
+from src.ui.layout_pc import LayoutIds, WriteLayoutIds, ListenLayoutIds
 from src.util import cw_meta
 
 Config.set('input', 'mouse', 'mouse,disable_multitouch')
+Config.set('graphics', 'maxfps', 30)
 
 
 class AppWindow(App):
 	force_debug = False
 	_sound = None
 	_writing_tutor = None
-	_reading_tutor = None
+	_listen_tutor = None
 	_key_lock = False
 	_wpm_box = None
 	_writing_layout = None
@@ -41,7 +42,7 @@ class AppWindow(App):
 		LabelBase.register(name='SourceCodePro', fn_regular=resource_find('fonts/SourceCodePro-Regular.ttf'))
 		layout = Builder.load_string(layout_pc.kv)
 		self._writing_layout = Builder.load_string(layout_pc.write_lesson_panel)
-		self._reading_layout = Builder.load_string(layout_pc.read_lesson_panel)
+		self._reading_layout = Builder.load_string(layout_pc.listen_lesson_panel)
 		self._content_block = layout.ids[LayoutIds.content_panel]
 
 		self.icon = resource_find('images/cw_typist.ico')
@@ -62,7 +63,7 @@ class AppWindow(App):
 		self._bind_help_menu(layout)
 		self._bind_write_layout(self._writing_layout)
 		self._bind_read_layout(self._reading_layout)
-		self.switch_to_write(None)
+		self.switch_to_read(None)
 		return layout
 
 	def _bind_lesson_buttons(self, layout):
@@ -74,53 +75,67 @@ class AppWindow(App):
 		exit_button.bind(on_press=self.stop)
 
 	def _bind_sound_menu(self, layout):
-		mute_button = layout.ids[LayoutIds.toggle_mute]
+		mute_button = layout.ids[WriteLayoutIds.toggle_mute]
 		mute_button.bind(on_press=self.toggle_mute)
 
 	def _bind_help_menu(self, layout):
 		pass
 
 	def _bind_write_layout(self, layout):
-		cw_button = layout.ids[LayoutIds.cw_button]
+		cw_button = layout.ids[WriteLayoutIds.cw_button]
 		cw_button.bind(on_press=self.cw_down)
 		cw_button.bind(on_release=self.cw_up)
 
 		self._sound = SoundLoader.load('sounds/morse.wav')
 		# self._sound.volume = 0
 		# self._sound.play()
-		cw_textbox = layout.ids[LayoutIds.cw_output]
+		cw_textbox = layout.ids[WriteLayoutIds.cw_output]
 		cw_textbox.password_mask = ''
 
-		lesson_textbox = layout.ids[LayoutIds.cw_lesson]
-		lesson_description = layout.ids[LayoutIds.lesson_description]
+		textbox = layout.ids[WriteLayoutIds.cw_lesson]
+		description = layout.ids[WriteLayoutIds.lesson_description]
 		self._writing_tutor = WritingTutor(
 			cw_textbox=cw_textbox,
-			lesson_textbox=lesson_textbox,
-			lesson_description_box=lesson_description)
+			lesson_textbox=textbox,
+			lesson_description_box=description)
 
-		lesson_next = layout.ids[LayoutIds.lesson_next]
-		lesson_next.bind(on_press=self.lesson_next)
-		lesson_prev = layout.ids[LayoutIds.lesson_prev]
-		lesson_prev.bind(on_press=self.lesson_prev)
+		next = layout.ids[WriteLayoutIds.lesson_next]
+		next.bind(on_press=self.write_lesson_next)
+		prev = layout.ids[WriteLayoutIds.lesson_prev]
+		prev.bind(on_press=self.write_lesson_prev)
 
-		clear_button = layout.ids[LayoutIds.clear_text]
-		clear_button.bind(on_press=self.clear_text)
+		clear_button = layout.ids[WriteLayoutIds.clear_text]
+		clear_button.bind(on_press=self.write_clear_text)
 
-		self._wpm_box = layout.ids[LayoutIds.wpm_display]
+		self._wpm_box = layout.ids[WriteLayoutIds.wpm_display]
 
 	def _bind_read_layout(self, layout):
-		self._reading_tutor = ReadingTutor()
-		pass
+		self._sound = SoundLoader.load('sounds/morse.wav')
+		textbox = layout.ids[ListenLayoutIds.cw_lesson]
+		description = layout.ids[ListenLayoutIds.lesson_description]
+		self._listen_tutor = ListeningTutor(cw_textbox=textbox, lesson_description_box=description)
+		submit_button = layout.ids[ListenLayoutIds.listen_submit]
+		submit_button.bind(on_press=self.listen_submit)
 
-	def lesson_next(self, event):
+	def write_lesson_next(self, event):
 		self._writing_tutor.lesson_next()
 
-	def lesson_prev(self, event):
+	def write_lesson_prev(self, event):
 		self._writing_tutor.lesson_prev()
 
-	def clear_text(self, event):
+	def write_clear_text(self, event):
 		self._writing_tutor.cw_textbox.text = ''
 		self._writing_tutor.reset_lesson()
+
+	def listen_lesson_next(self, event):
+		self._listen_tutor.lesson_next()
+
+	def listen_lesson_prev(self, event):
+		self._listen_tutor.lesson_prev()
+
+	def listen_submit(self, event):
+		self._listen_tutor.cw_textbox.text = ''
+		self._listen_tutor.reset_lesson()
 
 	def switch_to_write(self, event):
 		self._content_block.remove_widget(self._reading_layout)
