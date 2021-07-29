@@ -138,7 +138,7 @@ BoxLayout:
 			orientation: "horizontal"
 			Button:
 				id: {ListenLayoutIds.listen_again}
-				text: 'Listen again'
+				text: 'Play Message'
 				font_size: dp(16)
 		AnchorLayout:
 			size_hint: (1.0, 0.8)
