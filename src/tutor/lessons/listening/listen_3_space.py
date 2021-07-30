@@ -10,5 +10,5 @@ class Listen3Space(ListenLesson):
 			f" The pause in between characters is usually as long as a 'dot,' and the pause in between words is as long" \
 			f" or longer than a dash."
 
-		self.target_text = 'EE E TT T TET ETE'
+		self.target_text = 'EE E EEE E EE EEE'
 
