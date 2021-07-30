@@ -16,7 +16,7 @@ class ListeningTutor(Tutor):
 		self._sound = sound
 		self._sound_indicator = sound_indicator
 		self._clocks = list()
-		self._beat_interval = 50
+		self._beat_interval = 100
 		self._play_button = play_button
 		self._submit_button = submit_button
 		registry = ListeningLessonRegistry()
@@ -44,7 +44,7 @@ class ListeningTutor(Tutor):
 			millis = cw_meta.symbol_ms(cw_meta.wpm(cw_meta.starting_rate), x)
 			if x == cw_meta.DIT or x == cw_meta.DAH:
 				start_duration.append((total_millis, millis))
-			total_millis += millis
+			total_millis += millis + self._beat_interval
 
 		x = 0
 		for k in start_duration:
