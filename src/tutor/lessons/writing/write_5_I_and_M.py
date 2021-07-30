@@ -1,10 +1,10 @@
 import re
 
 from src.util import cw_meta
-from src.util.lesson import Lesson
+from src.util.write_lesson import WriteLesson
 
 
-class Lesson5IandM(Lesson):
+class Write5IandM(WriteLesson):
 	def __init__(self):
 		super().__init__()
 		self.lesson_title = f"I: {cw_meta.formatted('I')} M: {cw_meta.formatted('M')}"

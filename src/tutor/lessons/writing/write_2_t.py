@@ -1,10 +1,10 @@
 import re
 
-from src.util.lesson import Lesson
 from src.util import cw_meta
+from src.util.write_lesson import WriteLesson
 
 
-class Lesson2T(Lesson):
+class Write2T(WriteLesson):
 	def __init__(self):
 		super().__init__()
 		self.lesson_title = f"T: {cw_meta.formatted('T')}"

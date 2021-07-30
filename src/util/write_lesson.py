@@ -1,4 +1,4 @@
-class Lesson:
+class WriteLesson:
 	def __init__(self):
 		self.lesson_title = Exception("Base method cannot be called")
 		self.lesson_description = Exception("Base method cannot be called")

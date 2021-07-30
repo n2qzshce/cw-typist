@@ -1,13 +1,12 @@
 import difflib
-import re
 
 from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.metrics import dp
-from kivy.uix.label import Label
 
-from src.cw.SymbolTracker import SymbolTracker
-from src.tutor.lessons.lib.lesson_registry import LessonRegistry
+from src.cw.symbol_tracker import SymbolTracker
+from src.tutor.lessons.lib.writing_lesson_registry import WritingLessonRegistry
+from src.tutor.tutor import Tutor
 from src.util import cw_meta
 
 bound_label = """
@@ -19,22 +18,19 @@ Label:
 	size_hint: (None, None)
 """
 
-class WritingTutor:
+
+class WritingTutor(Tutor):
 	def __init__(self, cw_textbox, lesson_textbox, lesson_description_box):
-		self._registry = LessonRegistry()
 		self.cw = SymbolTracker()
 		self.cw_textbox = cw_textbox
 		self._lesson_textbox = lesson_textbox
-		self._lesson_description_box = lesson_description_box
 		self._lesson = None
 		self._next_letter_event = Clock.schedule_once(self._next_letter, self.cw.next_letter_timing())
 		self._next_letter_event.cancel()
 		self._next_word_event = Clock.schedule_once(self._next_word, self.cw.next_word_timing())
 		self._next_word_event.cancel()
 		self._lesson_already_completed = False
-
-		self._lesson_number = 0
-		self.load_lesson()
+		super().__init__(registry=WritingLessonRegistry(), lesson_description_box=lesson_description_box)
 
 	def cw_down(self, tick):
 		self.cw.keyed_down(tick)
@@ -59,10 +55,8 @@ class WritingTutor:
 		self.key_event()
 
 	def load_lesson(self):
+		super().load_lesson()
 		self._lesson_textbox.clear_widgets()
-		self._lesson_number = self._lesson_number % len(self._registry.lessons)
-		self._lesson = self._registry.lessons[self._lesson_number]()
-		self._lesson_description_box.text = f"[b]{self._lesson.lesson_title}[/b]\n\n{self._lesson.lesson_description}"
 		self._lesson_textbox.text = self._lesson.target_text
 		self._lesson_already_completed = False
 		self.cw_textbox.text = ''
@@ -71,17 +65,6 @@ class WritingTutor:
 		else:
 			self.cw_textbox.password = False
 		self.key_event()
-
-	def lesson_next(self):
-		self._lesson_number += 1
-		self.load_lesson()
-
-	def lesson_prev(self):
-		self._lesson_number -= 1
-		self.load_lesson()
-
-	def reset_lesson(self):
-		self.load_lesson()
 
 	def key_event(self):
 		if self._lesson_already_completed or self._lesson_number == 0:

@@ -1,6 +1,6 @@
 import collections
 
-from src.cw.SymbolTracker import SymbolTracker
+from src.cw.symbol_tracker import SymbolTracker
 from src.util import cw_meta
 from test.base_test_setup import BaseTestSetup
 

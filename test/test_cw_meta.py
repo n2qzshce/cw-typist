@@ -10,7 +10,7 @@ class TestCwMeta(BaseTestSetup):
 		self.assertEqual(1, wpm)
 
 	def test_wpm_rate_formula(self):
-		dit = cw_meta.dit_ms(1)
+		dit = cw_meta.symbol_ms(1, cw_meta.DIT)
 		self.assertEqual(1200, dit)
 
 	def test_letter_e(self):
@@ -31,3 +31,11 @@ class TestCwMeta(BaseTestSetup):
 	def test_character_formatting(self):
 		result = cw_meta.formatted('?')
 		self.assertEqual('••——••', result)
+
+	def test_builds_message(self):
+		result = cw_meta.build_sequence('EE')
+		self.assertEqual([cw_meta.DIT, cw_meta.NEXT_LETTER, cw_meta.DIT], result)
+
+	def test_builds_multiple_words(self):
+		result = cw_meta.build_sequence('T E')
+		self.assertEqual([cw_meta.DAH, cw_meta.NEXT_WORD, cw_meta.DIT], result)

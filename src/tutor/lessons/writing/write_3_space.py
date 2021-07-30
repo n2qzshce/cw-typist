@@ -1,9 +1,9 @@
 import re
 
-from src.util.lesson import Lesson
+from src.util.write_lesson import WriteLesson
 
 
-class Lesson3Space(Lesson):
+class Write3Space(WriteLesson):
 	def __init__(self):
 		super().__init__()
 		self.lesson_title = "Spacing:"
