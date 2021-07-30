@@ -19,10 +19,12 @@ class ListeningTutor(Tutor):
 		self._beat_interval = 100
 		self._play_button = play_button
 		self._submit_button = submit_button
+		self._tone_events = list()
 		registry = ListeningLessonRegistry()
 		super().__init__(registry=registry, lesson_description_box=lesson_description_box)
 
 	def load_lesson(self):
+		self.stop_message()
 		super().load_lesson()
 		self.input_box.text = ''
 		self._score_report.text = ''
@@ -53,8 +55,8 @@ class ListeningTutor(Tutor):
 
 	def schedule_tone(self, x, wait_ms, duration_ms):
 		logging.debug(f"Scheduling tone {x} in {wait_ms} for {duration_ms}")
-		Clock.schedule_once(lambda _: self.play_tone(), wait_ms/1000)
-		Clock.schedule_once(lambda _: self.stop_tone(), (wait_ms+duration_ms)/1000)
+		self._tone_events.append(Clock.schedule_once(lambda _: self.play_tone(), wait_ms/1000))
+		self._tone_events.append(Clock.schedule_once(lambda _: self.stop_tone(), (wait_ms+duration_ms)/1000))
 
 	def play_tone(self):
 		logging.debug(f"Playing tone!")
@@ -65,6 +67,13 @@ class ListeningTutor(Tutor):
 		logging.debug(f"Stopping tone!")
 		self._sound.stop()
 		self._sound_indicator.rgb = (0.4, 0.4, 0.4)
+
+	def stop_message(self):
+		for x in self._tone_events:
+			x.cancel()
+
+		self.stop_tone()
+		self._tone_events = list()
 
 	def submit_answer(self):
 		if self._lesson.is_quiz():

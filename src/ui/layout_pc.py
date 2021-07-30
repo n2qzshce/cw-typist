@@ -20,6 +20,7 @@ class ListenLayoutIds:
 	listen_submit = 'listen_submit'
 	play_message = 'listen_again'
 	queue_light = 'queue_light'
+	stop_message = 'stop_message'
 	wpm_display = 'wpm_display'
 
 
@@ -133,18 +134,23 @@ BoxLayout:
 			font_size: dp(16)
 			size_hint: (1, 0.15)
 	BoxLayout:
-		padding: dp(40)
 		orientation: "vertical"
 		BoxLayout:
-			padding: dp(10)
+			padding: dp(12)
 			size_hint: (1.0, 0.2)
 			orientation: "horizontal"
 			Button:
 				id: {ListenLayoutIds.play_message}
+				size_hint: (0.7, 1.0)
 				text: 'Play Message'
 				font_size: dp(16)
+			Button:
+				id: {ListenLayoutIds.stop_message}
+				size_hint: (0.3, 1.0)
+				text: 'Stop'
+				font_size: dp(16)
 		AnchorLayout:
-			size_hint: (1.0, 0.8)
+			size_hint: (1.0, 0.70)
 			anchor_x: 'center'
 			anchor_y: 'center'
 			id: {ListenLayoutIds.canvas}
@@ -176,13 +182,12 @@ BoxLayout:
 				font_size: dp(16)
 		Label:
 			id: {ListenLayoutIds.lesson_description}
-			text_size: self.width, None
+			text_size: self.width, self.height
 			padding: (dp(12), dp(12))
-			size_hint: (1, 0.3)
+			size_hint: (1, 0.8)
+			valign: 'top'
 			text: ''
 			markup: True
-		Label:
-			size_hint: (1, 0.4)
 """
 
 kv = f"""

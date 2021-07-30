@@ -65,7 +65,7 @@ class AppWindow(App):
 		self._bind_sound_menu(layout)
 		self._bind_help_menu(layout)
 		self._bind_write_layout(self._writing_layout)
-		self._bind_read_layout(self._listening_layout)
+		self._bind_listen_layout(self._listening_layout)
 
 		self.switch_to_listen(None)
 		return layout
@@ -112,7 +112,7 @@ class AppWindow(App):
 		self._wpm_box = layout.ids[WriteLayoutIds.wpm_display]
 		self._wpm_box.text = f"WPM: {self._writing_tutor.cw.wpm():.0f}"
 
-	def _bind_read_layout(self, layout):
+	def _bind_listen_layout(self, layout):
 		self._sound = SoundLoader.load('sounds/morse.wav')
 		textbox = layout.ids[ListenLayoutIds.cw_lesson]
 		description = layout.ids[ListenLayoutIds.lesson_description]
@@ -127,6 +127,8 @@ class AppWindow(App):
 
 		play_button = layout.ids[ListenLayoutIds.play_message]
 		play_button.bind(on_press=self.listen_play_message)
+		stop_button = layout.ids[ListenLayoutIds.stop_message]
+		stop_button.bind(on_press=self.listen_stop_message)
 		submit_button = layout.ids[ListenLayoutIds.listen_submit]
 		submit_button.bind(on_press=self.listen_submit)
 		lamp = None
@@ -169,6 +171,9 @@ class AppWindow(App):
 	def listen_play_message(self, _):
 		self._listen_tutor.play_message()
 
+	def listen_stop_message(self, _):
+		self._listen_tutor.stop_message()
+
 	def switch_to_write(self, _):
 		self._content_block.remove_widget(self._listening_layout)
 		self._content_block.remove_widget(self._writing_layout)
@@ -189,7 +194,7 @@ class AppWindow(App):
 			self._sound.volume = 0
 		else:
 			self._sound.volume = 1
-			self._sound.stop()
+			self._sound.stop_message()
 
 	def key_down_handler(self, _, key, _2, _3, _4):
 		if self._key_lock:
@@ -228,4 +233,4 @@ class AppWindow(App):
 		self._wpm_box.text = f"WPM: {self._writing_tutor.cw.wpm():.0f}"
 
 	def cw_stop(self, _):
-		self._sound.stop()
+		self._sound.stop_message()
