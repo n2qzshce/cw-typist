@@ -1,4 +1,6 @@
 import difflib
+import logging
+from threading import Thread
 
 from src.tutor.lessons.lib.listening_lesson_registry import ListeningLessonRegistry
 from src.tutor.tutor import Tutor
@@ -19,7 +21,6 @@ class ListeningTutor(Tutor):
 		self._submit_button = submit_button
 		registry = ListeningLessonRegistry()
 		super().__init__(registry=registry, lesson_description_box=lesson_description_box)
-		pass
 
 	def load_lesson(self):
 		super().load_lesson()
@@ -27,7 +28,6 @@ class ListeningTutor(Tutor):
 		self._score_report.text = ''
 		self._play_button.disabled = False
 		self._submit_button.disabled = False
-		pass
 
 	def play_message(self):
 		if self._lesson.is_quiz():
@@ -37,26 +37,32 @@ class ListeningTutor(Tutor):
 		Clock.schedule_once(focus_text, 1/10)
 
 		cw_sequence = cw_meta.build_sequence(self._lesson.target_text)
-		start_duration = dict()
+		start_duration = list()
 		total_millis = 1000
 
 		for x in cw_sequence:
-			millis = cw_meta.symbol_ms(cw_meta.wpm(200), x)
+			millis = cw_meta.symbol_ms(cw_meta.wpm(cw_meta.starting_rate), x)
 			if x == cw_meta.DIT or x == cw_meta.DAH:
-				start_duration[total_millis] = millis
+				start_duration.append((total_millis, millis))
 			total_millis += millis
 
-		for k in start_duration.keys():
-			def the_player(_): self.play_tone(start_duration[k])
-			Clock.schedule_once(the_player, k / 1000)
+		x = 0
+		for k in start_duration:
+			thread = Thread(target=lambda : self.schedule_tone(x, k[0], k[1]))
+			thread.start()
 
-	def play_tone(self, duration_ms):
-		self._sound.seek(0)
+	def schedule_tone(self, x, wait_ms, duration_ms):
+		logging.debug(f"Scheduling tone {x} in {wait_ms} for {duration_ms}")
+		Clock.schedule_once(lambda _: self.play_tone(), wait_ms/1000)
+		Clock.schedule_once(lambda _: self.stop_tone(), (wait_ms+duration_ms)/1000)
+
+	def play_tone(self):
+		logging.debug(f"Playing tone!")
 		self._sound.play()
 		self._sound_indicator.rgb = (0.0, 0.8, 0.0)
-		Clock.schedule_once(self.stop_tone, duration_ms / 1000)
 
-	def stop_tone(self, _):
+	def stop_tone(self):
+		logging.debug(f"Stopping tone!")
 		self._sound.stop()
 		self._sound_indicator.rgb = (0.4, 0.4, 0.4)
 
