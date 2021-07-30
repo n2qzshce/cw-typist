@@ -9,5 +9,5 @@ class Listen5IandM(ListenLesson):
 		self.lesson_description = f"Morse letters are made of a combination of long and short pulses. Any given" \
 			f"letter will usually be a series of pulses."
 
-		self.target_text = 'IIMMIIMMIIMM II MM II MM IMIM MIMI I M IM M I MI'
+		self.target_text = 'M I IM MI MMIIMIMI MM II'
 

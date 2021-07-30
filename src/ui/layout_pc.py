@@ -118,6 +118,7 @@ BoxLayout:
 			id: {ListenLayoutIds.cw_lesson}
 			size_hint: (1, 0.30)
 			markup: True
+			text_size: self.width, None
 			color: [0.90, 0.90, 0.10, 1.0]
 		Label:
 			text: 'Your Input'

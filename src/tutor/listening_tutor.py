@@ -26,6 +26,10 @@ class ListeningTutor(Tutor):
 	def load_lesson(self):
 		self.stop_message()
 		super().load_lesson()
+
+		if not self._lesson.is_quiz():
+			_, lesson_duration = self.compile_message(self._lesson.target_text)
+			self._lesson_description_box.text += f'\n\nMessage duration: ~{lesson_duration/1000:0.1f}s'
 		self.input_box.text = ''
 		self._score_report.text = ''
 		self._play_button.disabled = False
@@ -38,15 +42,7 @@ class ListeningTutor(Tutor):
 		def focus_text(_): self.input_box.focus = True
 		Clock.schedule_once(focus_text, 1/10)
 
-		cw_sequence = cw_meta.build_sequence(self._lesson.target_text)
-		start_duration = list()
-		total_millis = 1000
-
-		for x in cw_sequence:
-			millis = cw_meta.symbol_ms(cw_meta.wpm(cw_meta.starting_rate), x)
-			if x == cw_meta.DIT or x == cw_meta.DAH:
-				start_duration.append((total_millis, millis))
-			total_millis += millis + self._beat_interval
+		start_duration, _ = self.compile_message(self._lesson.target_text)
 
 		x = 0
 		for k in start_duration:
@@ -91,4 +87,17 @@ class ListeningTutor(Tutor):
 		elif match_pct > 90:
 			flavor_text = "Pretty close!"
 		self._score_report.text = f"{answer_text}\nLesson complete.\nAccuracy: {match_pct:2.0f}%\n\n{flavor_text}\n"
+
+	def compile_message(self, message):
+		cw_sequence = cw_meta.build_sequence(message)
+		start_duration = list()
+		total_millis = 1000
+
+		for x in cw_sequence:
+			millis = cw_meta.symbol_ms(cw_meta.wpm(cw_meta.starting_rate), x)
+			if x == cw_meta.DIT or x == cw_meta.DAH:
+				start_duration.append((total_millis, millis))
+			total_millis += millis + self._beat_interval
+
+		return start_duration, total_millis
 
